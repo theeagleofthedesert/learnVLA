@@ -73,7 +73,7 @@ def eval_libero(args: Args) -> None:
     writer = csv.writer(csv_f)
     if write_header:
         writer.writerow([
-            "tag", "suite", "task_id", "task", "init_state_id", "repeat", "replan_steps",
+            "tag", "suite", "task_id", "task_name", "task", "init_state_id", "repeat", "replan_steps",
             "success", "steps", "n_infer", "mean_infer_ms", "wall_s", "video",
         ])
 
@@ -144,7 +144,7 @@ def eval_libero(args: Args) -> None:
                     video = f"{args.task_suite_name}_t{task_id}_s{init_id}_r{rep}_{'ok' if done else 'fail'}.mp4"
                     imageio.mimwrite(out_dir / "videos" / video, frames, fps=10)
                 writer.writerow([
-                    args.tag, args.task_suite_name, task_id, task_description, init_id, rep, args.replan_steps,
+                    args.tag, args.task_suite_name, task_id, task.name, task_description, init_id, rep, args.replan_steps,
                     int(done), t - args.num_steps_wait, n_infer, round(infer_ms / max(n_infer, 1), 1),
                     round(time.time() - t0, 1), video,
                 ])

@@ -6,6 +6,14 @@
 #   OUT=results/xxx  VIDEOS=failure|all|none  TAG=任意字符串  SEED=7
 set -o pipefail
 source /weka/projects/rzhao36/lwang/codes/learnVLA/scripts/env.sh
+# PLUS=1 → 用 LIBERO-Plus（独立 venv + 独立路径配置 + ImageMagick），否则原版 LIBERO
+if [ "${PLUS:-0}" = "1" ]; then
+  LIBERO_VENV=$ROOT/external/LIBERO-plus/.venv
+  export LIBERO_CONFIG_PATH=$ROOT/libero_config_plus
+  export PYTHONPATH=$ROOT/external/LIBERO-plus
+  export MAGICK_HOME=/weka/projects/rzhao36/lwang/miniforge3/envs/imagemagick
+  export LD_LIBRARY_PATH=$MAGICK_HOME/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+fi
 CONFIG=${CONFIG:-pi05_libero}; CKPT=${CKPT:-gs://openpi-assets/checkpoints/pi05_libero}; NUM_STEPS=${NUM_STEPS:-10}
 SUITE=${SUITE:-libero_spatial}; TRIALS=${TRIALS:-50}; REPEATS=${REPEATS:-1}; REPLAN=${REPLAN:-5}
 OUT=${OUT:-$ROOT/results/eval}; VIDEOS=${VIDEOS:-failure}; TAG=${TAG:-$CONFIG}; SEED=${SEED:-7}
