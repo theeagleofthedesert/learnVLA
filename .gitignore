@@ -3,3 +3,5 @@ logs/
 results/failure_gallery/
 *.mp4
 __pycache__/
+results/**/server_*.log
+results/**/client_*.log
