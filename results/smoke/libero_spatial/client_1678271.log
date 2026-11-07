@@ -1,0 +1,19 @@
+[robosuite WARNING] No private macro file found! (macros.py:53)
+[robosuite WARNING] It is recommended to use a private macro file (macros.py:54)
+[robosuite WARNING] To setup, run: python /weka/projects/rzhao36/lwang/codes/learnVLA/external/openpi/examples/libero/.venv/lib/python3.8/site-packages/robosuite/scripts/setup_macros.py (macros.py:55)
+2026-11-07 10:21:43,467 suite=libero_spatial tasks=[0] max_steps=220 replan=5
+2026-11-07 10:21:43,467 Waiting for server at ws://127.0.0.1:22001...
+2026-11-07 10:21:43,479 server metadata: {'config': 'pi05_libero', 'dir': 'gs://openpi-assets/checkpoints/pi05_libero', 'num_steps': 10}
+[info] using task orders [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+tasks:   0%|          | 0/1 [00:00<?, ?it/s]/weka/projects/rzhao36/lwang/codes/learnVLA/external/openpi/examples/libero/.venv/lib/python3.8/site-packages/numba/np/arraymath.py:3845: DeprecationWarning: `np.MachAr` is deprecated (NumPy 1.22).
+  @overload(np.MachAr)
+[Warning]: datasets path /weka/projects/rzhao36/lwang/datasets/libero does not exist!
+[Warning]: datasets path /weka/projects/rzhao36/lwang/datasets/libero does not exist!
+
+task0:   0%|          | 0/2 [00:00<?, ?it/s][A2026-11-07 10:22:08,506 task 0 init 0 rep 0: OK (1/1 = 100.0%)
+
+task0:  50%|█████     | 1/2 [00:23<00:23, 23.36s/it][A2026-11-07 10:22:11,808 task 0 init 1 rep 0: OK (2/2 = 100.0%)
+
+task0: 100%|██████████| 2/2 [00:26<00:00, 11.56s/it][A
+                                                    [Atasks: 100%|██████████| 1/1 [00:28<00:00, 28.39s/it]tasks: 100%|██████████| 1/1 [00:28<00:00, 28.39s/it]
+2026-11-07 10:22:11,879 DONE libero_spatial: 2/2 = 100.0%  -> /weka/projects/rzhao36/lwang/codes/learnVLA/results/smoke/libero_spatial/episodes.csv

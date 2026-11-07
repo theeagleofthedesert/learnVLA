@@ -49,11 +49,12 @@ Wilson 区间比正态近似好在 p 接近 1 时不会超过 100%，且 n 小�
 
 LIBERO 里没有"部分完成"。两阶段任务做完第一阶段卡住，和一开始就没动，都是 0。所以成功率掩盖了失败的位置，这就是为什么 §3 要看视频分类。`episodes.csv` 的 `steps` 列能粗分：steps 接近 max_steps 是超时（卡住、反复尝试），steps 很短而失败是出了异常（撞翻、掉落触发终止）。
 
-## 5. 评测成本（待首次全量评测后补实际数字）
+## 5. 评测成本（冒烟测试 1678271，H100 实测）
 
-- 一次 `client.infer`：JAX JIT 后约 ?? ms（看 `mean_infer_ms`）。
-- 一个 episode：max_steps / replan_steps 次推理 + 仿真渲染，约 ?? 秒。
-- 一个 suite 500 episode 约 ?? 小时，单卡 L40S。
+- server 起到 healthz 通：40 秒。第一次 `infer` 触发 JIT 编译，第一个 episode 平均 820 ms/次、共 23 秒；之后 **42 ms/次**。
+- 一个 spatial episode（约 100 步、20 次推理）：**3.3 秒**，仿真和渲染占大头。
+- 估算：spatial 500 episode 约 30 分钟；libero_10 最长 520 步，约 1.5 小时。整个 4 suite 一张卡 4 小时以内。
+- 显存：JAX 预留 75%，实际远小于此。
 
 ## 6. 怎么跑
 
