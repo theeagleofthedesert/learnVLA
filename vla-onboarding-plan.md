@@ -203,7 +203,7 @@ R-norecover 是新加的。示教里没有恢复数据是 VLA 最常被指出的
 ## 8. 集群规范（沿用 SmartXray / wifiVLN 的做法）
 
 - sbatch 头：`--partition=h100,h200,a100 --account=rzhao36_vifinav --qos=jhu --comment=accept_cost --gres=gpu:1 --cpus-per-task=8 --mem=64G --requeue`。评测作业 CPU 可以多给，MuJoCo 渲染吃 CPU。
-- 先试 `l40s` 分区（48 GB，排队短）跑评测；LoRA 微调若 48 GB 不够再上 H100。`XLA_PYTHON_CLIENT_MEM_FRACTION=0.9`。
+- 分区固定用 `h100,h200,a100`（qos=jhu）。l40s 留给 wifiVLN 项目，不要用。冒烟测试实测评测占 34.5 GB 显存，三种卡都够。`XLA_PYTHON_CLIENT_MEM_FRACTION=0.9`。
 - conda：`source /weka/projects/rzhao36/lwang/miniforge3/etc/profile.d/conda.sh`，先 `module load cuda/12.6.3`。建环境本身也用 sbatch（参考 `SmartXray/scripts/setup_env.sbatch`）。
 - **weka guard**：计算节点间歇性掉 `/weka` 挂载。每个 sbatch 开头抄 `SmartXray/scripts/run_episodes.sbatch` 的那段：等 30 次不行就 requeue 并排除该节点；日志先写 `$HOME` 再拷回。
 - HF 缓存：`HF_HOME=/weka/projects/rzhao36/lwang/datasets/models/huggingface`，`HF_HUB_DISABLE_XET=1`。

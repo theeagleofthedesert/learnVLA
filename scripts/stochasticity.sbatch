@@ -1,6 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=vla_stoch
-#SBATCH --partition=l40s
+#SBATCH --partition=h100,h200,a100
+#SBATCH --qos=jhu
 #SBATCH --account=rzhao36_vifinav
 #SBATCH --comment=accept_cost
 #SBATCH --gres=gpu:1

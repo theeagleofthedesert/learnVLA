@@ -28,12 +28,13 @@ SERVER_PID=$!
 trap "kill $SERVER_PID 2>/dev/null" EXIT
 echo "server pid=$SERVER_PID port=$PORT log=$OUT/server_${SLURM_JOB_ID:-local}.log"
 # 等端口打开（加载 + JIT 编译要几分钟）
+# 用 HTTP GET /healthz 探活（server 的 process_request 里实现）；直接 /dev/tcp 探端口会在 server 日志里刷 handshake 报错
 for i in $(seq 1 120); do
-  (echo > /dev/tcp/127.0.0.1/$PORT) 2>/dev/null && break
+  curl -sf http://127.0.0.1:$PORT/healthz >/dev/null 2>&1 && break
   kill -0 $SERVER_PID 2>/dev/null || { echo SERVER_DIED; tail -30 $OUT/server_${SLURM_JOB_ID:-local}.log; exit 1; }
   sleep 10
 done
-(echo > /dev/tcp/127.0.0.1/$PORT) 2>/dev/null || { echo SERVER_TIMEOUT; exit 1; }
+curl -sf http://127.0.0.1:$PORT/healthz >/dev/null 2>&1 || { echo SERVER_TIMEOUT; exit 1; }
 echo "server up after ~$((i*10))s"
 
 # --- client（LIBERO 环境）---

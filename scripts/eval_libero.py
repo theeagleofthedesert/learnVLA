@@ -178,4 +178,4 @@ def _quat2axisangle(quat):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
-    tyro.cli(eval_libero)
+    eval_libero(tyro.cli(Args))   # 官方 main.py 用 tyro.cli(eval_libero)，参数会变成 --args.xxx；这里直接解析 Args
