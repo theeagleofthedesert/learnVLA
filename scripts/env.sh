@@ -9,6 +9,7 @@ export PYTHONPATH=$OPENPI/third_party/libero${PYTHONPATH:+:$PYTHONPATH}
 export PATH=$HOME/.local/bin:$PATH
 export UV_CACHE_DIR=/weka/projects/rzhao36/lwang/.uv_cache
 export UV_PYTHON_INSTALL_DIR=/weka/projects/rzhao36/lwang/.uv_python
+export UV_PYTHON_PREFERENCE=only-managed   # 系统 python3.11 没有 Python.h，evdev 等源码包编不过；只用 uv 托管的 Python
 
 # openpi 的 checkpoint / tokenizer 缓存（默认 ~/.cache/openpi）
 export OPENPI_DATA_HOME=/weka/projects/rzhao36/lwang/datasets/models/openpi

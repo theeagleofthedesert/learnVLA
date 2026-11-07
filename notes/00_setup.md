@@ -105,3 +105,10 @@ SUITE=libero_10 OUT=results/eval_official/libero_10 TAG=official bash scripts/ru
 ## 9. 常见报错
 
 （setup 作业跑完后补）
+
+### 报错 1：`fatal error: Python.h: No such file or directory`（编 evdev 时）
+
+- 现象：`uv sync` 输出 `Using CPython 3.11.11 interpreter at: /usr/bin/python3.11`，随后 lerobot 的依赖 pynput → evdev 要从源码编，系统 Python 没装 `python3-devel`。
+- 原因：uv 默认优先用系统里已有的匹配版本 Python。
+- 解决：`export UV_PYTHON_PREFERENCE=only-managed`（已写进 `scripts/env.sh`）。uv 托管的 python-build-standalone 自带头文件。改完要 `rm -rf .venv` 再 sync，否则 uv 会沿用旧解释器。
+- 作业：1677024 失败，1677469 重跑。
