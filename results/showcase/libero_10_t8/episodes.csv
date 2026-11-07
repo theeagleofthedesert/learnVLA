@@ -1,0 +1,11 @@
+tag,suite,task_id,task_name,task,init_state_id,repeat,replan_steps,success,steps,n_infer,mean_infer_ms,wall_s,video
+showcase,libero_10,8,KITCHEN_SCENE8_put_both_moka_pots_on_the_stove,put both moka pots on the stove,0,0,5,1,432,87,350.0,40.0,libero_10_t8_s0_r0_ok.mp4
+showcase,libero_10,8,KITCHEN_SCENE8_put_both_moka_pots_on_the_stove,put both moka pots on the stove,1,0,5,1,355,72,66.0,12.2,libero_10_t8_s1_r0_ok.mp4
+showcase,libero_10,8,KITCHEN_SCENE8_put_both_moka_pots_on_the_stove,put both moka pots on the stove,2,0,5,0,520,104,66.0,17.3,libero_10_t8_s2_r0_fail.mp4
+showcase,libero_10,8,KITCHEN_SCENE8_put_both_moka_pots_on_the_stove,put both moka pots on the stove,3,0,5,0,520,104,66.0,17.2,libero_10_t8_s3_r0_fail.mp4
+showcase,libero_10,8,KITCHEN_SCENE8_put_both_moka_pots_on_the_stove,put both moka pots on the stove,4,0,5,0,520,104,66.0,17.4,libero_10_t8_s4_r0_fail.mp4
+showcase,libero_10,8,KITCHEN_SCENE8_put_both_moka_pots_on_the_stove,put both moka pots on the stove,5,0,5,1,405,82,66.1,13.8,libero_10_t8_s5_r0_ok.mp4
+showcase,libero_10,8,KITCHEN_SCENE8_put_both_moka_pots_on_the_stove,put both moka pots on the stove,6,0,5,0,520,104,65.9,17.4,libero_10_t8_s6_r0_fail.mp4
+showcase,libero_10,8,KITCHEN_SCENE8_put_both_moka_pots_on_the_stove,put both moka pots on the stove,7,0,5,1,409,82,66.0,14.0,libero_10_t8_s7_r0_ok.mp4
+showcase,libero_10,8,KITCHEN_SCENE8_put_both_moka_pots_on_the_stove,put both moka pots on the stove,8,0,5,1,449,90,66.0,15.2,libero_10_t8_s8_r0_ok.mp4
+showcase,libero_10,8,KITCHEN_SCENE8_put_both_moka_pots_on_the_stove,put both moka pots on the stove,9,0,5,0,520,104,66.0,17.4,libero_10_t8_s9_r0_fail.mp4
