@@ -1,5 +1,5 @@
 # 抄自 SmartXray/scripts/run_episodes.sbatch（2026-10-30）：计算节点间歇性缺 /weka 挂载。
-# 用法：在 sbatch 脚本的 #SBATCH 头之后 `source /weka/.../scripts/weka_guard.sh`
+# 注意：不要 source 这个文件。/weka 掉挂载时它自己也不在。把下面的块复制进每个 sbatch。
 # 效果：等最多 5 分钟；仍然没有就 requeue 并排除本节点。日志写在 $HOME/vla_logs，退出时拷回 $ROOT/logs。
 ROOT=/weka/projects/rzhao36/lwang/codes/learnVLA
 JID=${SLURM_ARRAY_JOB_ID:+${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}}; JID=${JID:-$SLURM_JOB_ID}
