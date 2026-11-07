@@ -94,6 +94,18 @@ norm stats 从哪来：
 - **推理时从 checkpoint 目录的 `assets/` 读**，不从配置读（`policy_config.py:66-70`），保证用的是训练时那一份。
 - 换数据源最常见的错：忘了重算，或者 asset_id 对不上。`docs/norm_stats.md` 讲了怎么复用预训练的 stats。
 
+### 3.1 `discrete_state_input=False` 到底意味着什么
+
+`state` 是本体感知：末端位置 3 + 轴角 3 + 夹爪 2 = 8 维，由 `LiberoInputs` 从 `observation/state` 取出（`policies/libero_policy.py:57`）。它进模型有三种可能：
+
+| 配置 | 路径 | 代码 |
+|---|---|---|
+| π0 | 连续向量 → `state_proj` 线性层 → 1 个 token 放在 suffix 最前面 | `models/pi0.py:152-155` |
+| π0.5 默认 | 每维量化到 256 个 bin → 文字 `Task: ..., State: 128 97 ...;` → 进 prompt | `models/tokenizer.py:24-28`；`Pi0Config.__post_init__` 让 `discrete_state_input` 默认等于 `pi05`（`pi0_config.py:40-41`） |
+| `pi05_libero` | **不进网络**：pi05 没有 `state_proj`，`TokenizePrompt` 收到 `state=None` | `transforms.py:256-260`，`config.py:745` 显式 `discrete_state_input=False` |
+
+所以这个 checkpoint 是纯视觉 + 语言策略。state 仍会被 `Normalize` 归一化、在 `Policy.infer` 里原样放进 outputs（`policy.py:93`），但那只是透传。想验证：把 client 发的 state 全置零，成功率应该不变——这是一个 10 分钟的实验。
+
 ## 4. 模型：π0.5 的 forward
 
 `src/openpi/models/pi0.py`。结构是**两个 Gemma 共享一条 attention 序列**：PaliGemma（2B，吃图像和文本）+ action expert（300M，吃噪声动作）。
