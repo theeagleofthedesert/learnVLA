@@ -1,0 +1,7 @@
+# LIBERO 路径配置。LIBERO 第一次 import 时会交互式询问数据集路径并写 ~/.libero/config.yaml，
+# sbatch 里没有 stdin 会卡死，所以预先写好并用 LIBERO_CONFIG_PATH 指向这个目录。
+assets: /weka/projects/rzhao36/lwang/codes/learnVLA/external/openpi/third_party/libero/libero/libero/assets
+bddl_files: /weka/projects/rzhao36/lwang/codes/learnVLA/external/openpi/third_party/libero/libero/libero/bddl_files
+benchmark_root: /weka/projects/rzhao36/lwang/codes/learnVLA/external/openpi/third_party/libero/libero/libero
+datasets: /weka/projects/rzhao36/lwang/datasets/libero
+init_states: /weka/projects/rzhao36/lwang/codes/learnVLA/external/openpi/third_party/libero/libero/libero/init_files

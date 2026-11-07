@@ -1,0 +1,5 @@
+external/
+logs/
+results/failure_gallery/
+*.mp4
+__pycache__/
