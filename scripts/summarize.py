@@ -24,9 +24,17 @@ def wilson(k, n, z=1.96):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("csvs", nargs="+")
-    ap.add_argument("--by", choices=["suite", "task", "init", "replan"], default="suite")
+    ap.add_argument("--by", choices=["suite", "task", "init", "replan", "category"], default="suite")
+    ap.add_argument("--classify", default="external/LIBERO-plus/libero/libero/benchmark/task_classification.json",
+                    help="--by category 时用：LIBERO-Plus 的 task_name → 扰动类别映射")
     a = ap.parse_args()
 
+    cat_of = {}
+    if a.by == "category":
+        import json
+        for suite, tasks in json.load(open(a.classify)).items():
+            for t in tasks:
+                cat_of[(suite, t["name"])] = (t["category"], t.get("difficulty_level"))
     groups = defaultdict(lambda: [0, 0, 0.0])  # k, n, sum_steps
     for path in a.csvs:
         with open(path) as f:
@@ -38,6 +46,8 @@ def main():
                     key += (int(r["task_id"]), int(r["init_state_id"]))
                 elif a.by == "replan":
                     key += (int(r["replan_steps"]),)
+                elif a.by == "category":
+                    key += (cat_of.get((r["suite"], r["task_name"]), ("?", None))[0],)
                 g = groups[key]
                 g[0] += int(r["success"]); g[1] += 1; g[2] += float(r["steps"])
 
