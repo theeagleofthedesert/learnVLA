@@ -1,0 +1,54 @@
+video,suite,task,init,label,note
+libero_spatial_t3_s9,libero_spatial,3,9,D,碗抓起后在盘子上方悬停到超时
+libero_spatial_t4_s25,libero_spatial,4,25,A,手在柜子上方徘徊，没进抽屉抓碗
+libero_spatial_t4_s46,libero_spatial,4,46,A,同上
+libero_spatial_t5_s40,libero_spatial,5,40,C,碗放到盘子边缘/斜着
+libero_spatial_t5_s44,libero_spatial,5,44,C,碗先放在盘子旁的桌面上，再抓起悬停
+libero_spatial_t7_s28,libero_spatial,7,28,D,碗在盘子上方悬停
+libero_spatial_t7_s35,libero_spatial,7,35,D,碗在盘子上方悬停
+libero_spatial_t8_s16,libero_spatial,8,16,C,碗落在盘子旁边
+libero_spatial_t9_s1,libero_spatial,9,1,D,碗在盘子上方悬停
+libero_object_t2_s46,libero_object,2,46,C/F,沙拉酱放到篮子边上后悬停
+libero_object_t3_s35,libero_object,3,35,C,BBQ 酱掉在篮子外
+libero_object_t4_s46,libero_object,4,46,C,番茄酱掉在篮子外
+libero_object_t5_s4,libero_object,5,4,G,伸手时把旁边的奶酪盒撞倒，之后悬停
+libero_object_t7_s1,libero_object,7,1,C/F,牛奶盒靠在篮沿上，手悬停
+libero_object_t9_s22,libero_object,9,22,C,橙汁盒斜靠在篮沿
+libero_goal_t0_s1,libero_goal,0,1,A/E,到了柜子但没抓中间抽屉把手
+libero_goal_t0_s19,libero_goal,0,19,A/E,同上
+libero_goal_t1_s25,libero_goal,1,25,D,碗抓着在炉台附近悬停
+libero_goal_t3_s20,libero_goal,3,20,A,一直悬在柜子上方，抽屉没打开
+libero_goal_t3_s42,libero_goal,3,42,D,抽屉开了、碗抓起，在抽屉上方悬停
+libero_goal_t4_s3,libero_goal,4,3,B,碗抓起后掉在柜子旁，之后悬停
+libero_goal_t5_s12,libero_goal,5,12,A,悬在盘子上方，从未推到盘子
+libero_goal_t5_s3,libero_goal,5,3,A,同上
+libero_goal_t6_s17,libero_goal,6,17,D,奶酪盒在碗上方悬停不松
+libero_goal_t6_s49,libero_goal,6,49,D,同上
+libero_goal_t6_s5,libero_goal,6,5,D,同上（偏向盘子一侧）
+libero_goal_t9_s10,libero_goal,9,10,D,酒瓶抓着在酒架旁悬停
+libero_10_t0_s18,libero_10,0,18,E,第二件抓成橙色奶酪盒（t7 的物体）
+libero_10_t0_s24,libero_10,0,24,D,第一件进篮，第二件抓着悬停
+libero_10_t0_s49,libero_10,0,49,E,抓了奶酪盒
+libero_10_t2_s37,libero_10,2,37,D,炉子拧了，摩卡壶在炉台上方悬停
+libero_10_t2_s6,libero_10,2,6,D,摩卡壶在炉台附近悬停
+libero_10_t4_s0,libero_10,4,0,D,白杯放好，黄杯悬停
+libero_10_t4_s13,libero_10,4,13,D,同上
+libero_10_t4_s44,libero_10,4,44,D,同上
+libero_10_t4_s49,libero_10,4,49,D,同上
+libero_10_t5_s15,libero_10,5,15,E/D,书插进了收纳盒但位置/格子可疑，压着不松
+libero_10_t6_s33,libero_10,6,33,D,白杯放好，布丁盒抓着悬停
+libero_10_t6_s38,libero_10,6,38,D,同上
+libero_10_t7_s14,libero_10,7,14,F,两件都在篮子里，手在上方停 300 步，done 未触发
+libero_10_t7_s34,libero_10,7,34,F,同上
+libero_10_t8_s1,libero_10,8,1,D,第一只放好，第二只悬停
+libero_10_t8_s12,libero_10,8,12,D,同上
+libero_10_t8_s17,libero_10,8,17,A,第一只放好，第二只没去抓，空手抬起
+libero_10_t8_s2,libero_10,8,2,D,第二只斜着压在炉台边
+libero_10_t8_s20,libero_10,8,20,D,第二只悬停
+libero_10_t8_s22,libero_10,8,22,G/D,第二只把炉台撞歪后悬停
+libero_10_t8_s4,libero_10,8,4,D,第二只悬停
+libero_10_t8_s8,libero_10,8,8,D,第二只悬停
+libero_10_t8_s21,libero_10,8,21,D?,未逐条看，按 t8 模式推定
+libero_10_t8_s24,libero_10,8,24,D?,未逐条看
+libero_10_t8_s26,libero_10,8,26,D?,未逐条看
+libero_10_t8_s6,libero_10,8,6,D?,未逐条看
