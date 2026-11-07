@@ -125,6 +125,15 @@ SUITE=libero_10 OUT=results/eval_official/libero_10 TAG=official bash scripts/ru
 - 原因：`run_eval.sh` 用 bash 的 `/dev/tcp` 探端口，连上就断，websocket server 把它当成坏的握手。
 - 解决：改用 `curl -sf http://127.0.0.1:$PORT/healthz`。server 在 `websocket_policy_server.py:86-90` 对 `/healthz` 返回 200。
 
+### 报错 4：节点上没有 /weka（`ga137`）
+`source /weka/.../weka_guard.sh` 本身就失败。守卫必须内联进每个 sbatch（`ROOT=...; for i in $(seq 1 30); do timeout 10 test -d $ROOT/logs && break; sleep 10; done`），加 `--chdir=/tmp --requeue`，缺挂载时 `scontrol requeue` 并把该节点加进 `ExcNodeList`。
+
+### 报错 5（LIBERO-Plus）：`egl-probe` 从源码编译失败
+robosuite 1.4.0 依赖 egl-probe，它只有 sdist，要 cmake；且它的 CMakeLists 写的是 `cmake_minimum_required(VERSION 2.8)`，cmake 4 直接拒绝。解法：`uv pip install "cmake<4"` 再装 requirements。
+
+### 报错 6（LIBERO-Plus）：解压 assets.zip 后找不到 `assets/scenes/*.xml`
+HF `Sylvest/LIBERO-plus` 的 assets.zip 内部带作者机器的绝对路径前缀 `inspire/hdd/project/.../LIBERO-plus-0/assets/`，`unzip -d libero/libero/` 会把东西放到 `libero/libero/inspire/...` 深处。解法：先解到临时目录，`find -type d -name assets` 后 `mv` 到位（脚本已改）。解压后 9.5 GB。
+
 ### 实测数字（1677469，L40S 48 GB）
 
 | 项 | 值 |
