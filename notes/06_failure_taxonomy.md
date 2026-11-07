@@ -35,17 +35,17 @@ python scripts/contact_sheet.py results/eval_official/libero_10/videos/*_fail.mp
 
 一条视频可以同时标两类（比如先 G 后 D），主类写最早出现的那一个。
 
-## 4. 全部失败的标签（官方 checkpoint，前 3 suite 全量 + libero_10 前 437 集）
+## 4. 全部失败的标签（官方 checkpoint，4 suite × 50 初始状态全量）
 
-逐条标签在 `results/failure_gallery/official/labels.csv`（53 条；libero_10 t8 的 4 条没逐帧看，按同任务模式推定，标了 `?`）。
+逐条标签在 `results/failure_gallery/official/labels.csv`（59 条；libero_10 t8 的 6 条没逐帧看，按同任务模式推定，标了 `?`）。
 
 | suite | 失败数 | A 接近停滞 | B 抓取失败 | C 放置偏离 | D 悬停不放 | E 混淆 | F 看似完成 | G 碰撞 |
 |---|---|---|---|---|---|---|---|---|
 | libero_spatial | 9 | 2 | 0 | 3 | 4 | 0 | 0 | 0 |
 | libero_object | 6 | 0 | 0 | 5 | 0 | 0 | 0 | 1 |
 | libero_goal | 12 | 5 | 1 | 0 | 6 | 0 | 0 | 0 |
-| libero_10 (437 集) | 26 | 1 | 0 | 0 | 19 | 3 | 2 | 1 |
-| 合计 | 53 | 8 | 1 | 8 | 29 | 3 | 2 | 2 |
+| libero_10 | 32 | 1 | 0 | 0 | 25 | 3 | 2 | 1 |
+| 合计 | 59 | 8 | 1 | 8 | 35 | 3 | 2 | 2 |
 
 几条有代表性的（都在 `results/failure_gallery/official/*.png`）：
 
@@ -66,7 +66,7 @@ python scripts/contact_sheet.py results/eval_official/libero_10/videos/*_fail.mp
 
 ## 5. 从分类表能得出什么
 
-1. **D 占 55%，而且集中在多阶段任务的第二阶段**。libero_10 的 26 条失败里 19 条是 D，且 t4（两只杯子）和 t8（两只壶）的 D 全是"第一件放好、第二件悬停"。libero_goal 的 D 也是"抓到了、到了目标上方、不松"。这不是运动精度问题，是策略在"该松手了"这个决策上犹豫。一个可检验的猜想：训练数据里第二件物体的放置位置多样性低（第一件已经占了位置），策略学到的放置动作被第一件物体"挡住"。验证方法：用 `VIDEOS=all` 跑 t8 的成功集，看成功时第二只壶放在第一只的哪一侧，是否固定。
+1. **D 占 59%，而且集中在多阶段任务的第二阶段**。libero_10 的 32 条失败里 25 条是 D，且 t4（两只杯子）和 t8（两只壶）的 D 全是"第一件放好、第二件悬停"。libero_goal 的 D 也是"抓到了、到了目标上方、不松"。这不是运动精度问题，是策略在"该松手了"这个决策上犹豫。一个可检验的猜想：训练数据里第二件物体的放置位置多样性低（第一件已经占了位置），策略学到的放置动作被第一件物体"挡住"。验证方法：用 `VIDEOS=all` 跑 t8 的成功集，看成功时第二只壶放在第一只的哪一侧，是否固定。
 2. **E 只出现在同场景近邻任务**（t0/t7 共享场景且只差一个物体）。LIBERO-Plus 的 language 扰动类会放大这一点，§4 的 Plus 结果出来后对照看。
 3. **C 集中在 libero_object**，物体是瓶/盒，篮子口不大，松手时机差几步就掉外面。这是重采样能"洗掉"的那类失败：随机性实验（`results/stochasticity`）出来后看 object 类的 init 级成功率是否 bimodal。
 4. **F 有 2 条值得查 BDDL**：`libero_10/KITCHEN_SCENE3_..._cream_cheese_box_in_basket.bddl` 的 `In` 谓词怎么判。如果是物体叠在另一件上导致质心不在篮子包围盒里，那是谓词边界，不是策略错。
