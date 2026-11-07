@@ -59,7 +59,11 @@ print(hf_hub_download('Sylvest/LIBERO-plus', 'assets.zip', repo_type='dataset', 
     echo "download attempt $i failed; retry in 60s"; sleep 60
   done
   [ -f assets.zip ] || { echo ASSETS_DOWNLOAD_FAIL; exit 1; }
-  unzip -q -o assets.zip -d $PLUS/libero/libero/ || { echo UNZIP_FAIL; exit 1; }
+  # zip 内部带作者机器的绝对路径前缀 inspire/hdd/.../LIBERO-plus-0/assets/，先解到临时目录再 mv 到位
+  TMPX=/weka/projects/rzhao36/lwang/datasets/libero_plus/_extract; rm -rf $TMPX; mkdir -p $TMPX
+  unzip -q -o assets.zip -d $TMPX || { echo UNZIP_FAIL; exit 1; }
+  ASSETS_DIR=$(find $TMPX -type d -name assets | head -1); [ -n "$ASSETS_DIR" ] || { echo "UNZIP_FAIL: no assets dir in zip"; exit 1; }
+  mv "$ASSETS_DIR" $PLUS/libero/libero/assets && rm -rf $TMPX
   cd $PLUS
 fi
 ls libero/libero/assets | head; du -sh libero/libero/assets
