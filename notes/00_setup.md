@@ -112,3 +112,28 @@ SUITE=libero_10 OUT=results/eval_official/libero_10 TAG=official bash scripts/ru
 - 原因：uv 默认优先用系统里已有的匹配版本 Python。
 - 解决：`export UV_PYTHON_PREFERENCE=only-managed`（已写进 `scripts/env.sh`）。uv 托管的 python-build-standalone 自带头文件。改完要 `rm -rf .venv` 再 sync，否则 uv 会沿用旧解释器。
 - 作业：1677024 失败，1677469 重跑。
+
+### 报错 2：客户端 `Unrecognized options: --host --port ...`
+
+- 现象：`eval_libero.py` 报所有参数都不认识，提示要用 `--args.host`。
+- 原因：`tyro.cli(eval_libero)` 把函数的 `args: Args` 参数当成一个嵌套对象，命令行就变成 `--args.xxx`。官方 `main.py` 也是这样，README 里的例子确实写 `--args.task-suite-name`。
+- 解决：改成 `eval_libero(tyro.cli(Args))`，直接解析 Args。
+- 作业：1677469 的冒烟测试失败于此，环境部分全部通过。
+
+### 报错 3（无害）：server 日志里刷 `InvalidMessage: did not receive a valid HTTP request`
+
+- 原因：`run_eval.sh` 用 bash 的 `/dev/tcp` 探端口，连上就断，websocket server 把它当成坏的握手。
+- 解决：改用 `curl -sf http://127.0.0.1:$PORT/healthz`。server 在 `websocket_policy_server.py:86-90` 对 `/healthz` 返回 200。
+
+### 实测数字（1677469，L40S 48 GB）
+
+| 项 | 值 |
+|---|---|
+| openpi `uv sync` | 约 40 分钟，大头是 CUDA wheel 下载 |
+| checkpoint `pi05_libero` | 12 GB，gcsfs 匿名下载可用（没有 gsutil 也行） |
+| server 从启动到 healthz 通 | 约 40 秒（含加载权重；JIT 编译在第一次 infer 时才发生） |
+| 评测时显存 | 34.5 GB（`XLA_PYTHON_CLIENT_MEM_FRACTION=0.75` 预留了大半，实际需要远小于此） |
+
+### 分区
+
+l40s 留给 wifiVLN 项目。本项目所有 GPU 作业用 `--partition=h100,h200,a100 --qos=jhu`。
