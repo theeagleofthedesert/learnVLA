@@ -42,7 +42,7 @@ cd $PLUS
 [ -d .venv ] || uv venv --python 3.8 .venv || exit 1
 source .venv/bin/activate
 # 复用 openpi 给 LIBERO 钉好的版本（torch cu113 等），再叠 LIBERO-plus 自己的 requirements 与 extra
-uv pip install cmake   # egl-probe (robosuite 1.4.0 依赖) 从源码编，需要 cmake
+uv pip install "cmake<4"   # egl-probe (robosuite 1.4.0 依赖) 从源码编；它的 CMakeLists 要求 cmake_minimum_required<3.5，cmake 4 拒绝
 uv pip install -r $OPENPI/examples/libero/requirements.txt --extra-index-url https://download.pytorch.org/whl/cu113 --index-strategy=unsafe-best-match || exit 1
 uv pip install -r requirements.txt -r extra_requirements.txt --index-strategy=unsafe-best-match || { echo PLUS_REQ_FAIL; exit 1; }
 uv pip install -e $OPENPI/packages/openpi-client || exit 1
