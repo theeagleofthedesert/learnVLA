@@ -23,12 +23,14 @@ libero_goal,Light Conditions,271,279,97.1,94.4,98.5
 libero_10,Camera Viewpoints,205,419,48.9,44.2,53.7
 libero_10,Robot Initial States,295,393,75.1,70.6,79.1
 libero_10,Language Instructions,344,383,89.8,86.4,92.5
-libero_10,Sensor Noise,210,266,78.9,73.7,83.4
+libero_10,Objects Layout,278,312,89.1,85.2,92.1
+libero_10,Sensor Noise,334,449,74.4,70.2,78.2
 libero_10,Background Textures,262,289,90.7,86.7,93.5
+libero_10,Light Conditions,255,274,93.1,89.4,95.5
 all,Camera Viewpoints,1147,1599,71.7,69.5,73.9
 all,Robot Initial States,1158,1550,74.7,72.5,76.8
 all,Language Instructions,1310,1537,85.2,83.4,86.9
-all,Objects Layout,1041,1213,85.8,83.7,87.7
-all,Sensor Noise,1267,1418,89.4,87.6,90.9
+all,Objects Layout,1319,1525,86.5,84.7,88.1
+all,Sensor Noise,1391,1601,86.9,85.1,88.4
 all,Background Textures,1027,1076,95.4,94.0,96.5
-all,Light Conditions,843,868,97.1,95.8,98.0
+all,Light Conditions,1098,1142,96.1,94.9,97.1

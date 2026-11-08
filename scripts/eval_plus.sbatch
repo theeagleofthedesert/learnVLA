@@ -42,7 +42,7 @@ export TRIALS=1 TAG=${TAG:-plus_official} VIDEOS=${VIDEOS:-failure}
 export OUT=${OUT:-$ROOT/results/libero_plus}/$SUITE
 EXCL=${RESUME:+--exclude-csv $OUT/episodes.csv}
 SEL=$($ROOT/external/LIBERO-plus/.venv/bin/python $ROOT/scripts/plus_select.py --suite $SUITE --category "$CATEGORY" --n $N --seed $SEL_SEED $EXCL) || { echo "SELECT_FAILED"; exit 1; }
-export TASKS=$(echo "$SEL" | tail -1)
+export TASKS=$(echo "$SEL" | tail -1 | grep -E "^[0-9 ]+$")   # 选空时最后一行是 robosuite 的 warning，不能当任务列表
 echo "selected $(echo $TASKS | wc -w) tasks"
 [ -z "$TASKS" ] && { echo "nothing to run (all tasks already in $OUT/episodes.csv)"; exit 0; }
 bash $ROOT/scripts/run_eval.sh

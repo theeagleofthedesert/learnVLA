@@ -47,7 +47,7 @@ python3 scripts/summarize.py --by category results/libero_plus/*/episodes.csv
 external/LIBERO-plus/.venv/bin/python scripts/plot_results.py
 ```
 
-`scripts/plus_select.py` 按类别抽任务索引；`--n 0` 全量，`--exclude-csv` 续跑。libero_10 全量超过 12 小时上限（任务多、每集 520 步），第一次跑到 1750/2519 被杀，剩下的 Objects Layout、Light Conditions 和一部分 Sensor Noise 用 `RESUME=1` 补（作业 1708650）。
+`scripts/plus_select.py` 按类别抽任务索引；`--n 0` 全量，`--exclude-csv` 续跑。libero_10 全量超过 12 小时上限（任务多、每集 520 步），第一次跑到 1750/2519 被杀，剩下的 Objects Layout、Light Conditions 和一部分 Sensor Noise 用 `RESUME=1` 补（作业 1708765，7.6 小时跑完）。四 suite 总计 10,030 集、约 36 卡时。
 
 ## 3. 结果
 
@@ -60,10 +60,11 @@ external/LIBERO-plus/.venv/bin/python scripts/plot_results.py
 | Camera Viewpoints | 76.3 | 86.9 | 76.2 | **48.9** | 71.7 | 98.2 / 98.8 / 97.6 / 93.6 |
 | Robot Initial States | 83.1 | 71.1 | 70.7 | 75.1 | 74.7 | |
 | Language Instructions | 91.8 | 91.5 | **69.3** | 89.8 | 85.2 | |
-| Objects Layout | 97.9 | 89.1 | **71.8** | 跑中 | 85.8 | |
-| Sensor Noise | 91.5 | 94.1 | 89.4 | 78.9 | 89.4 | |
+| Objects Layout | 97.9 | 89.1 | **71.8** | 89.1 | 86.5 | |
+| Sensor Noise | 91.5 | 94.1 | 89.4 | 74.4 | 86.9 | |
 | Background Textures | 96.1 | 99.2 | 96.4 | 90.7 | 95.4 | |
-| Light Conditions | 97.6 | 96.6 | 97.1 | 跑中 | 97.1 | |
+| Light Conditions | 97.6 | 96.6 | 97.1 | 93.1 | 96.1 | |
+| **全部扰动** | 90.2 | 89.0 | 79.9 | 78.3 | 84.6 | 97.0 |
 
 对照 LIBERO-Plus 论文榜（`external/LIBERO-plus/README.md`）里的 π0（不是 π0.5）：Camera 13.8 / Robot 6.0 / Language 58.8 / Light 85.0 / Background 81.4 / Noise 79.0 / Layout 68.9。**π0.5 全面好于 π0，特别是相机视角（14→72）和机器人初始状态（6→75）**。榜上最好的 OpenVLA-OFT+ 是在 LIBERO-Plus 数据上混合微调过的（Camera 92.8），不可比。
 
@@ -71,11 +72,11 @@ external/LIBERO-plus/.venv/bin/python scripts/plot_results.py
 
 | 等级 | Camera | Robot | Language | Layout | Noise | Background | Light |
 |---|---|---|---|---|---|---|---|
-| 1 | 97.5 | 94.0 | 91.8 | 96.5 | 94.6 | 98.3 | 97.0 |
-| 3 | 77.8 | 84.5 | 95.4 | 91.3 | 95.9 | 97.3 | 96.3 |
-| 5 | **45.0** | **46.2** | **59.1** | 68.2 | 59.1 | 80.8 | 96.0 |
+| 1 | 97.5 | 94.0 | 91.8 | 94.0 | 94.9 | 98.3 | 97.3 |
+| 3 | 77.8 | 84.5 | 95.4 | 90.0 | 95.3 | 97.3 | 96.7 |
+| 5 | **45.0** | **46.2** | **59.1** | 68.5 | **51.5** | 80.8 | 91.2 |
 
-三种曲线形状：相机和机器人姿势是**单调往下掉**，等级 2 就开始丢分；语言、布局、噪声是**前四级平、第五级断崖**；光照和纹理基本不掉。
+三种曲线形状：相机和机器人姿势是**单调往下掉**，等级 2 就开始丢分；语言、布局、噪声是**前四级平、第五级断崖**（噪声 5 级是玻璃模糊，libero_10 上尤其伤）；光照和纹理基本不掉。
 
 ### 3.3 失败长什么样
 
@@ -98,12 +99,11 @@ external/LIBERO-plus/.venv/bin/python scripts/plot_results.py
 ## 4. 这一节回答了什么、没回答什么
 
 回答了：
-- 最伤的扰动是相机视角和机器人起手姿势（等级 5 都在 45% 附近），其次语言改写在 goal suite 上。光照、纹理几乎免疫。
+- 最伤的扰动是相机视角和机器人起手姿势（等级 5 都在 45% 附近），其次语言改写在 goal suite 上和 5 级传感器噪声。光照、纹理几乎免疫。四 suite 合并 84.6%，比原版 LIBERO 的 97.0 低 12 个点；libero_10 和 goal 掉得最多（78–80%）。
 - 失败形态和原版一致：视觉扰动→停滞，语言扰动→退回先验物体。没有一种扰动让策略"乱动"。
 - π0.5 比论文榜上的 π0 稳得多，相机视角从 14% 到 72%。
 
 没回答、第 2 周可以接的：
-- libero_10 的 Layout / Light 两类（1708650 跑中），补上后更新 CSV 和图。
 - LIBERO-Plus 每个变体只跑 1 集。配合 notes/03 §2.3 的结论（失败主要是采样随机），同一个变体任务重复几次成功率会不会回升？可以挑相机等级 5 的 20 个变体各跑 5 次。
 - 机器人起手姿势扰动为什么伤这么大：pi05_libero 不读 state，只能从图像里看手臂。起手姿势变了，第一帧的手臂图像就在训练分布外。第 2 周微调时加 `discrete_state_input` 做一次对比是便宜的实验。
 
