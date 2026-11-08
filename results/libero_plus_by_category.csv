@@ -1,0 +1,34 @@
+suite,category,succ,n,rate,ci_lo,ci_hi
+libero_spatial,Camera Viewpoints,287,376,76.3,71.8,80.3
+libero_spatial,Robot Initial States,291,350,83.1,78.9,86.7
+libero_spatial,Language Instructions,358,390,91.8,88.6,94.1
+libero_spatial,Objects Layout,377,385,97.9,96.0,98.9
+libero_spatial,Sensor Noise,321,351,91.5,88.1,93.9
+libero_spatial,Background Textures,248,258,96.1,93.0,97.9
+libero_spatial,Light Conditions,285,292,97.6,95.1,98.8
+libero_object,Camera Viewpoints,344,396,86.9,83.2,89.8
+libero_object,Robot Initial States,283,398,71.1,66.5,75.3
+libero_object,Language Instructions,324,354,91.5,88.2,94.0
+libero_object,Objects Layout,359,403,89.1,85.7,91.8
+libero_object,Sensor Noise,397,422,94.1,91.4,96.0
+libero_object,Background Textures,246,248,99.2,97.1,99.8
+libero_object,Light Conditions,287,297,96.6,93.9,98.2
+libero_goal,Camera Viewpoints,311,408,76.2,71.9,80.1
+libero_goal,Robot Initial States,289,409,70.7,66.1,74.9
+libero_goal,Language Instructions,284,410,69.3,64.6,73.5
+libero_goal,Objects Layout,305,425,71.8,67.3,75.8
+libero_goal,Sensor Noise,339,379,89.4,85.9,92.2
+libero_goal,Background Textures,271,281,96.4,93.6,98.1
+libero_goal,Light Conditions,271,279,97.1,94.4,98.5
+libero_10,Camera Viewpoints,205,419,48.9,44.2,53.7
+libero_10,Robot Initial States,295,393,75.1,70.6,79.1
+libero_10,Language Instructions,344,383,89.8,86.4,92.5
+libero_10,Sensor Noise,210,266,78.9,73.7,83.4
+libero_10,Background Textures,262,289,90.7,86.7,93.5
+all,Camera Viewpoints,1147,1599,71.7,69.5,73.9
+all,Robot Initial States,1158,1550,74.7,72.5,76.8
+all,Language Instructions,1310,1537,85.2,83.4,86.9
+all,Objects Layout,1041,1213,85.8,83.7,87.7
+all,Sensor Noise,1267,1418,89.4,87.6,90.9
+all,Background Textures,1027,1076,95.4,94.0,96.5
+all,Light Conditions,843,868,97.1,95.8,98.0

@@ -1,0 +1,37 @@
+category,difficulty_level,succ,n,rate,ci_lo,ci_hi
+Camera Viewpoints,1,194,199,97.5,94.3,98.9
+Camera Viewpoints,2,318,360,88.3,84.6,91.3
+Camera Viewpoints,3,253,325,77.8,73.0,82.0
+Camera Viewpoints,4,163,228,71.5,65.3,77.0
+Camera Viewpoints,5,219,487,45.0,40.6,49.4
+Robot Initial States,1,233,248,94.0,90.3,96.3
+Robot Initial States,2,264,292,90.4,86.5,93.3
+Robot Initial States,3,316,374,84.5,80.5,87.8
+Robot Initial States,4,183,285,64.2,58.5,69.6
+Robot Initial States,5,162,351,46.2,41.0,51.4
+Language Instructions,1,301,328,91.8,88.3,94.3
+Language Instructions,2,266,280,95.0,91.8,97.0
+Language Instructions,3,247,259,95.4,92.1,97.3
+Language Instructions,4,294,328,89.6,85.9,92.5
+Language Instructions,5,202,342,59.1,53.8,64.1
+Objects Layout,1,191,198,96.5,92.9,98.3
+Objects Layout,2,214,228,93.9,90.0,96.3
+Objects Layout,3,241,264,91.3,87.3,94.1
+Objects Layout,4,200,237,84.4,79.2,88.5
+Objects Layout,5,195,286,68.2,62.6,73.3
+Sensor Noise,1,157,166,94.6,90.0,97.1
+Sensor Noise,2,461,470,98.1,96.4,99.0
+Sensor Noise,3,255,266,95.9,92.7,97.7
+Sensor Noise,4,284,330,86.1,81.9,89.4
+Sensor Noise,5,110,186,59.1,52.0,66.0
+Background Textures,1,229,233,98.3,95.7,99.3
+Background Textures,2,265,271,97.8,95.3,99.0
+Background Textures,3,256,263,97.3,94.6,98.7
+Background Textures,4,159,163,97.5,93.9,99.0
+Background Textures,5,118,146,80.8,73.7,86.4
+Light Conditions,1,97,100,97.0,91.5,99.0
+Light Conditions,2,161,162,99.4,96.6,99.9
+Light Conditions,3,184,191,96.3,92.6,98.2
+Light Conditions,4,165,169,97.6,94.1,99.1
+Light Conditions,5,120,125,96.0,91.0,98.3
+Light Conditions,,116,121,95.9,90.7,98.2

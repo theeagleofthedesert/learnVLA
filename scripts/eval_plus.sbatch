@@ -14,6 +14,8 @@
 # §1.4 LIBERO-Plus 扰动评测。每个 array task 一个 suite；每类扰动抽 N 个变体任务，各跑 1 个 episode（官方协议）。
 #   sbatch --array=0-3 scripts/eval_plus.sbatch                     # 粗扫：7 类 × 30 个 = 210 episode / suite
 #   N=0 CATEGORY="Camera Viewpoints" sbatch --array=3 scripts/eval_plus.sbatch   # 某一类全量
+#   N=0 RESUME=1 sbatch --array=3 scripts/eval_plus.sbatch           # 超时后续跑：跳过 OUT/episodes.csv 里已有的任务
+# 耗时参考（a100，全量 N=0）：spatial 8.3h / object 10.3h / goal 9.5h / libero_10 >12h（超时，需 RESUME）
 # --- weka guard（内联，不能 source /weka 上的文件：掉挂载时它自己也不在）---
 ROOT=/weka/projects/rzhao36/lwang/codes/learnVLA
 JID=${SLURM_ARRAY_JOB_ID:+${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}}; JID=${JID:-$SLURM_JOB_ID}
@@ -35,8 +37,10 @@ N=${N:-30}; CATEGORY=${CATEGORY:-all}; SEL_SEED=${SEL_SEED:-0}
 # 选任务要在 plus venv 里跑
 export LIBERO_CONFIG_PATH=$ROOT/libero_config_plus PYTHONPATH=$ROOT/external/LIBERO-plus
 export MAGICK_HOME=/weka/projects/rzhao36/lwang/miniforge3/envs/imagemagick LD_LIBRARY_PATH=$MAGICK_HOME/lib
-export TASKS=$($ROOT/external/LIBERO-plus/.venv/bin/python $ROOT/scripts/plus_select.py --suite $SUITE --category "$CATEGORY" --n $N --seed $SEL_SEED | tail -1)
-echo "selected $(echo $TASKS | wc -w) tasks"
 export TRIALS=1 TAG=${TAG:-plus_official} VIDEOS=${VIDEOS:-failure}
 export OUT=${OUT:-$ROOT/results/libero_plus}/$SUITE
+EXCL=${RESUME:+--exclude-csv $OUT/episodes.csv}
+export TASKS=$($ROOT/external/LIBERO-plus/.venv/bin/python $ROOT/scripts/plus_select.py --suite $SUITE --category "$CATEGORY" --n $N --seed $SEL_SEED $EXCL | tail -1)
+echo "selected $(echo $TASKS | wc -w) tasks"
+[ -z "$TASKS" ] && { echo "nothing to run"; exit 0; }
 bash $ROOT/scripts/run_eval.sh

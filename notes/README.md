@@ -83,18 +83,19 @@ VLA（Vision-Language-Action）模型是一个函数：**输入几张相机图 +
 | 官方复现报告 | `results/repro.md` | 我们的环境和论文一致吗 |
 | 失败画廊 + 标签 | `results/failure_gallery/official/` | 失败长什么样 |
 | 成功/失败对照视频 | `results/showcase/` | 同一个任务成功和失败差在哪 |
-| 推理消融 | `results/ablation_inference/` | replan、去噪步数影响多大 |
-| 随机性实验 | `results/stochasticity/` | 失败是"这个初始状态必败"还是"运气" |
-| LIBERO-Plus | `results/libero_plus/` | 换光照/视角/措辞还行不行 |
+| 推理消融 | `results/inference_ablation.csv/.png`, notes/03 | replan、去噪步数影响多大：开环=闭环，replan 越频繁越差，去噪 3 步够 |
+| 随机性实验 | `results/stochasticity_by_init.csv`, `stochasticity_hist.png`, notes/03 §2.3 | 失败是"这个初始状态必败"还是"运气"：200 个初始状态 0 个必败 |
+| LIBERO-Plus | `results/libero_plus_by_category.csv`, `libero_plus.png`, notes/04 | 换光照/视角/措辞还行不行：视角和起手姿势最伤（等级 5 约 45%），光照纹理免疫 |
 
 ## 6. 读文档的顺序
 
 1. 这篇（地图）。
 2. `notes/02_eval_protocol.md`：一个数字是怎么来的。只要你会看结果，就能跟上后面所有讨论。
 3. `results/repro.md` + `notes/06_failure_taxonomy.md`：结果和失败。配合视频看。
-4. `notes/01_code_walkthrough.md`：顺着一次推理调用读代码。需要开着编辑器对照行号，是最"具体"的一篇，不必一次读完，§0 总览和 §4 模型先看。
-5. `notes/00_setup.md`：环境怎么装的、踩了什么坑。要自己改脚本时再读。
-6. `vla-onboarding-plan.md`：两周计划本身，看第 2 周要做什么。
+4. `notes/03_inference_ablation.md` + `notes/04_libero_plus.md`：不训练的三组实验。每组开头有"区分哪两个假设"，先读那张表再看数字。
+5. `notes/01_code_walkthrough.md`：顺着一次推理调用读代码。需要开着编辑器对照行号，是最"具体"的一篇，不必一次读完，§0 总览和 §4 模型先看。
+6. `notes/00_setup.md`：环境怎么装的、踩了什么坑。要自己改脚本时再读。
+7. `vla-onboarding-plan.md`：两周计划本身，看第 2 周要做什么。
 
 ## 7. 术语表
 
