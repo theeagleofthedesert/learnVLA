@@ -22,3 +22,4 @@ export PYOPENGL_PLATFORM=egl
 
 # JAX 显存：默认只拿 75%，训练时要 0.9；评测用默认即可
 export XLA_PYTHON_CLIENT_MEM_FRACTION=${XLA_PYTHON_CLIENT_MEM_FRACTION:-0.75}
+export HF_LEROBOT_HOME=/weka/projects/rzhao36/lwang/datasets/lerobot   # LeRobot 数据集（35 GB）放 weka，不能进 $HOME

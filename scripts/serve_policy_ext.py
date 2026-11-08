@@ -9,6 +9,9 @@ import socket
 import tyro
 from openpi.policies import policy_config as _policy_config
 from openpi.serving import websocket_policy_server
+import pathlib, sys
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import train_configs  # noqa: F401  让 --config 也能用第 2 周的微调配置
 from openpi.training import config as _config
 
 
