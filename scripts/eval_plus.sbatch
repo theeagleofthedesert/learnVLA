@@ -36,11 +36,13 @@ export PLUS=1 SUITE=${SUITES[${SLURM_ARRAY_TASK_ID:-0}]}
 N=${N:-30}; CATEGORY=${CATEGORY:-all}; SEL_SEED=${SEL_SEED:-0}
 # 选任务要在 plus venv 里跑
 export LIBERO_CONFIG_PATH=$ROOT/libero_config_plus PYTHONPATH=$ROOT/external/LIBERO-plus
-export MAGICK_HOME=/weka/projects/rzhao36/lwang/miniforge3/envs/imagemagick LD_LIBRARY_PATH=$MAGICK_HOME/lib
+export MAGICK_HOME=/weka/projects/rzhao36/lwang/miniforge3/envs/imagemagick
+export LD_LIBRARY_PATH=$MAGICK_HOME/lib   # 不能和上一行合并：同一行里 $MAGICK_HOME 在赋值前展开，会变成 /lib
 export TRIALS=1 TAG=${TAG:-plus_official} VIDEOS=${VIDEOS:-failure}
 export OUT=${OUT:-$ROOT/results/libero_plus}/$SUITE
 EXCL=${RESUME:+--exclude-csv $OUT/episodes.csv}
-export TASKS=$($ROOT/external/LIBERO-plus/.venv/bin/python $ROOT/scripts/plus_select.py --suite $SUITE --category "$CATEGORY" --n $N --seed $SEL_SEED $EXCL | tail -1)
+SEL=$($ROOT/external/LIBERO-plus/.venv/bin/python $ROOT/scripts/plus_select.py --suite $SUITE --category "$CATEGORY" --n $N --seed $SEL_SEED $EXCL) || { echo "SELECT_FAILED"; exit 1; }
+export TASKS=$(echo "$SEL" | tail -1)
 echo "selected $(echo $TASKS | wc -w) tasks"
-[ -z "$TASKS" ] && { echo "nothing to run"; exit 0; }
+[ -z "$TASKS" ] && { echo "nothing to run (all tasks already in $OUT/episodes.csv)"; exit 0; }
 bash $ROOT/scripts/run_eval.sh
