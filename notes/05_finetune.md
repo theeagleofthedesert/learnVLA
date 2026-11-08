@@ -29,7 +29,14 @@
 | `discrete_state_input` | False | False | 保持一致；候选 3 的对照再打开 |
 | 其余 | pi05=True, horizon 10, quantile 归一化, 不做 delta, 从 pi05_base 起 | 同 | |
 
-LoRA 具体挂在哪（待填：读 `openpi/models/gemma.py` 里 `lora` 分支，列出矩阵和 rank）。
+LoRA 具体挂在哪（`openpi/models/gemma.py:88-107, 177-242, 319-323`，`openpi/models/lora.py:12-24`）：
+
+| 半边 | 变体 | 挂在哪些矩阵 | rank / alpha |
+|---|---|---|---|
+| VLM 骨干（PaliGemma 的 Gemma 2B） | `gemma_2b_lora` | 每层注意力的 q/k/v 投影和输出投影（`attn`）、每层 FFN 的三个矩阵（`ffn`） | 16 / 16 |
+| 动作专家（Gemma 300M） | `gemma_300m_lora` | 同上 | 32 / 32 |
+
+SigLIP 视觉编码器、embedding、`action_in_proj` / `action_out_proj` / 时间步 MLP 这些不在 LoRA 里，被 `freeze_filter` 冻住（它冻结一切名字不含 `lora` 的参数）。也就是说**微调能改的只有两个 transformer 里的注意力和 FFN 的低秩增量**；视觉特征完全是 pi05_base 的。这对候选 3（起手姿势脆弱）有含义：如果问题在视觉编码器没见过新姿势的手臂，LoRA 微调也救不了。
 
 ## 2. 示教子采样怎么做
 
