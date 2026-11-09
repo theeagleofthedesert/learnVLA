@@ -19,6 +19,8 @@ import json
 import pathlib
 import random
 
+import torch
+
 import openpi.models.pi0_config as pi0_config
 import openpi.training.config as _config
 import openpi.training.data_loader as _data_loader
@@ -89,9 +91,24 @@ def _create_torch_dataset(data_config, action_horizon, model_config):
         episodes=list(episodes),
         delta_timestamps={k: [t / meta.fps for t in range(action_horizon)] for k in data_config.action_sequence_keys},
     )
+    _fix_episode_data_index(ds, episodes, meta.total_episodes)
     if data_config.prompt_from_task:
         ds = _data_loader.TransformedDataset(ds, [_transforms.PromptFromLeRobotTask(meta.tasks)])
     return ds
+
+
+def _fix_episode_data_index(ds, episodes, total_episodes):
+    """绕开这一版 LeRobot 的子集 bug（notes/00 错误 7）。
+    传 episodes 时 episode_data_index 的第 j 行是"子集里第 j 条"的帧范围，但 __getitem__ 用原始 episode 编号去查。
+    编号 >= 子集大小时越界报错；编号更小时不报错，却拿到另一条 episode 的范围，动作序列被悄悄截错。
+    这里把表摊开成按原始编号索引的全长表（没选中的行是 0，不会被查到）。
+    """
+    idx = torch.as_tensor(list(episodes))
+    full = {}
+    for key, val in ds.episode_data_index.items():
+        full[key] = torch.zeros(total_episodes, dtype=val.dtype)
+        full[key][idx] = val
+    ds.episode_data_index = full
 
 
 _data_loader.create_torch_dataset = _create_torch_dataset
