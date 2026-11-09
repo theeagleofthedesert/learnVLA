@@ -4,6 +4,8 @@
 #   CONFIG=pi05_libero  CKPT=gs://openpi-assets/checkpoints/pi05_libero  NUM_STEPS=10
 #   SUITE=libero_spatial  TASKS="0 1 2"(空=全部)  TRIALS=50  INIT_IDS="0 3"(空=前 TRIALS 个)  REPEATS=1  REPLAN=5
 #   OUT=results/xxx  VIDEOS=failure|all|none  TAG=任意字符串  SEED=7
+#   NOISE_SCALE=1  NOISE_MODE=fresh|episode  RTC=0|1  RTC_BETA=5      （server 端，见 policy_ext.py）
+#   LOG_TRAJ=0|1  PROBE_EVERY=0  PROBE_N=16                           （client 端，轨迹和 probe 存到 $OUT/traj）
 set -o pipefail
 source /weka/projects/rzhao36/lwang/codes/learnVLA/scripts/env.sh
 # PLUS=1 → 用 LIBERO-Plus（独立 venv + 独立路径配置 + ImageMagick），否则原版 LIBERO
@@ -22,7 +24,10 @@ mkdir -p $OUT
 
 # --- server（openpi 环境）---
 cd $OPENPI
-uv run python $ROOT/scripts/serve_policy_ext.py --config $CONFIG --dir $CKPT --port $PORT --num-steps $NUM_STEPS \
+SERVER_EXT="--noise-scale ${NOISE_SCALE:-1} --noise-mode ${NOISE_MODE:-fresh} --rtc-beta ${RTC_BETA:-5}"
+[ "${RTC:-0}" = "1" ] && SERVER_EXT="$SERVER_EXT --rtc"
+[ "${RTC_DIAG:-0}" = "1" ] && SERVER_EXT="$SERVER_EXT --rtc-diag"
+uv run python $ROOT/scripts/serve_policy_ext.py --config $CONFIG --dir $CKPT --port $PORT --num-steps $NUM_STEPS $SERVER_EXT \
   > $OUT/server_${SLURM_JOB_ID:-local}.log 2>&1 &
 SERVER_PID=$!
 trap "kill $SERVER_PID 2>/dev/null" EXIT
@@ -43,6 +48,8 @@ ARGS="--host 127.0.0.1 --port $PORT --task-suite-name $SUITE --num-trials-per-ta
       --replan-steps $REPLAN --out-dir $OUT --save-videos $VIDEOS --tag $TAG --seed $SEED"
 [ -n "$TASKS" ] && ARGS="$ARGS --task-ids $TASKS"
 [ -n "$INIT_IDS" ] && ARGS="$ARGS --init-state-ids $INIT_IDS"
+[ "${LOG_TRAJ:-0}" = "1" ] && ARGS="$ARGS --log-traj"
+[ "${PROBE_EVERY:-0}" != "0" ] && ARGS="$ARGS --probe-every $PROBE_EVERY --probe-n ${PROBE_N:-16}"
 echo "client args: $ARGS"
 python $ROOT/scripts/eval_libero.py $ARGS 2>&1 | tee -a $OUT/client_${SLURM_JOB_ID:-local}.log
 RC=${PIPESTATUS[0]}

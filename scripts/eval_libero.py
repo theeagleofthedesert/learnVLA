@@ -4,6 +4,8 @@
 2. 可以只跑部分任务 / 部分初始状态，可以对同一初始状态重复 K 次（§1.5 随机性分离）。
 3. 视频只存失败（默认），文件名带任务 id 和初始状态 id，方便做 failure gallery。
 4. replan_steps 从命令行给（§1.3 推理期消融）。
+5. --log-traj 把每步动作、末端位置、夹爪开度和每次推理的整段 chunk 存成 traj/task{id}.npz；
+   --probe-every N 每隔约 N 步让 server 对同一观测多采 probe_n 条 chunk 一起存下（notes/07）。
 
 必须在 examples/libero/.venv (Python 3.8) 里跑，所以不能用 3.10+ 语法。
 用法见 scripts/run_eval.sh。
@@ -61,6 +63,9 @@ class Args:
     save_videos: str = "failure"   # failure | all | none
     tag: str = ""                  # 写进 CSV 的自由标签，例如 ckpt 名
     seed: int = 7
+    log_traj: bool = False         # 存逐步轨迹和每次推理的 chunk
+    probe_every: int = 0           # >0：距上次 probe 至少这么多步后，下一次推理顺带采 probe_n 条
+    probe_n: int = 16
 
 
 def eval_libero(args: Args) -> None:
@@ -91,6 +96,7 @@ def eval_libero(args: Args) -> None:
         init_states = task_suite.get_task_init_states(task_id)   # (50, state_dim) 固定初始状态
         env, task_description = _get_libero_env(task, LIBERO_ENV_RESOLUTION, args.seed)
         init_ids = args.init_state_ids if args.init_state_ids is not None else list(range(args.num_trials_per_task))
+        traj = {}   # 本任务所有 episode 的轨迹，任务结束时写一个 npz
 
         for init_id in tqdm.tqdm(init_ids, desc=f"task{task_id}", leave=False):
             for rep in range(args.repeats):
@@ -101,6 +107,8 @@ def eval_libero(args: Args) -> None:
                 t, done = 0, False
                 n_infer, infer_ms = 0, 0.0
                 frames = []
+                log = collections.defaultdict(list)
+                last_probe = -10 ** 9
                 while t < max_steps + args.num_steps_wait:
                     if t < args.num_steps_wait:
                         obs, reward, done, info = env.step(LIBERO_DUMMY_ACTION)
@@ -124,14 +132,30 @@ def eval_libero(args: Args) -> None:
                             ),
                             "prompt": str(task_description),
                         }
+                        probe = args.probe_n if args.probe_every > 0 and t - last_probe >= args.probe_every else 0
+                        # server 端 PolicyExt 用：一集的边界、上一段执行了几步、是否顺带多采几条
+                        element["ctrl"] = {"reset": n_infer == 0, "executed": args.replan_steps if n_infer else 0, "probe": probe}
                         out = client.infer(element)
                         chunk = out["actions"]            # (action_horizon, 7)
+                        if args.log_traj:
+                            log["chunk_t"].append(t - args.num_steps_wait)
+                            log["chunk"].append(np.asarray(chunk, dtype=np.float32))
+                            if "rtc_diag" in out:
+                                log["rtc_diag"].append(np.asarray(out["rtc_diag"], dtype=np.float32))
+                        if probe:
+                            last_probe = t
+                            log["probe_t"].append(t - args.num_steps_wait)
+                            log["probe"].append(np.asarray(out["probe_actions"], dtype=np.float32))
                         n_infer += 1
                         infer_ms += out.get("policy_timing", {}).get("infer_ms", 0.0)
                         assert len(chunk) >= args.replan_steps, f"chunk {len(chunk)} < replan {args.replan_steps}"
                         action_plan.extend(chunk[: args.replan_steps])
 
                     action = action_plan.popleft()
+                    if args.log_traj:   # 执行这一步之前的状态 + 这一步的动作
+                        log["act"].append(np.asarray(action, dtype=np.float32))
+                        log["eef"].append(np.asarray(obs["robot0_eef_pos"], dtype=np.float32))
+                        log["grip"].append(np.asarray(obs["robot0_gripper_qpos"], dtype=np.float32))
                     obs, reward, done, info = env.step(action.tolist())   # done == 任务成功判定
                     if done:
                         break
@@ -139,6 +163,10 @@ def eval_libero(args: Args) -> None:
 
                 total += 1
                 succ += int(done)
+                for key, val in log.items():
+                    traj["i%d_r%d/%s" % (init_id, rep, key)] = np.asarray(val)
+                if log:
+                    traj["i%d_r%d/success" % (init_id, rep)] = np.asarray(int(done))
                 video = ""
                 if args.save_videos == "all" or (args.save_videos == "failure" and not done):
                     video = f"{args.task_suite_name}_t{task_id}_s{init_id}_r{rep}_{'ok' if done else 'fail'}.mp4"
@@ -152,6 +180,9 @@ def eval_libero(args: Args) -> None:
                 logging.info("task %d init %d rep %d: %s (%d/%d = %.1f%%)", task_id, init_id, rep,
                              "OK" if done else "FAIL", succ, total, 100 * succ / total)
         env.close()
+        if traj:
+            (out_dir / "traj").mkdir(exist_ok=True)
+            np.savez_compressed(out_dir / "traj" / ("task%d.npz" % task_id), **traj)
 
     csv_f.close()
     logging.info("DONE %s: %d/%d = %.1f%%  -> %s", args.task_suite_name, succ, total, 100 * succ / max(total, 1), csv_path)

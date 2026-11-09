@@ -5,3 +5,5 @@ results/failure_gallery/
 __pycache__/
 results/**/server_*.log
 results/**/client_*.log
+
+results/**/traj/
