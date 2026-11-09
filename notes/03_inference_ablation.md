@@ -1,6 +1,6 @@
 # notes/03 推理期消融与随机性分离：不训练，只改推理，能知道什么
 
-> 读者：lwang。目的：同一个 checkpoint，只改两个推理参数（replan 步数、去噪步数）和重复采样，就能把"失败来自哪里"切开一半。对应计划 §1.3、§1.5。数据：`results/inference_ablation.csv`、`results/stochasticity_by_init.csv`，图 `results/inference_ablation.png`、`results/stochasticity_hist.png`。
+> 读者：lwang。目的：同一个 checkpoint，只改两个推理参数（replan 步数、去噪步数）和重复采样，就能把"失败来自哪里"切开一半。对应计划 §1.3、§1.5。数据：[`results/inference_ablation.csv`](../results/inference_ablation.csv)、[`results/stochasticity_by_init.csv`](../results/stochasticity_by_init.csv)，图 [`results/inference_ablation.png`](../results/inference_ablation.png)、[`results/stochasticity_hist.png`](../results/stochasticity_hist.png)。
 
 ## 0. 两个实验各自区分什么
 
@@ -14,7 +14,7 @@
 
 ### 1.1 replan：client 端的一个 deque
 
-`scripts/eval_libero.py:117-134`：
+[`scripts/eval_libero.py:125-157`](../scripts/eval_libero.py#L125)：
 
 ```python
 if not action_plan:                      # 队列空了才问一次模型
@@ -27,11 +27,11 @@ action = action_plan.popleft()
 obs, reward, done, info = env.step(action.tolist())
 ```
 
-模型一次吐 10 步（`pi05_libero` 的 `action_horizon=10`，`config.py:603`），client 只执行前 k 步就丢掉剩下的、重新观测。k=10 就是整段开环；k=1 是每一步都重新推理。openpi 官方 `main.py` 默认 k=5。**计划里写的 25/50 不存在**：horizon 只有 10，`assert` 会拦住。
+模型一次吐 10 步（`pi05_libero` 的 `action_horizon=10`，[`config.py:745`](../external/openpi/src/openpi/training/config.py#L745)），client 只执行前 k 步就丢掉剩下的、重新观测。k=10 就是整段开环；k=1 是每一步都重新推理。openpi 官方 [`main.py`](../external/openpi/examples/libero/main.py) 默认 k=5。**计划里写的 25/50 不存在**：horizon 只有 10，`assert` 会拦住。
 
 ### 1.2 去噪步数：server 端的 while_loop
 
-`scripts/serve_policy_ext.py:20-29` 把 `--num-steps` 传进 `sample_kwargs`，最终到 `pi0.py:217-279`：
+[`scripts/serve_policy_ext.py:21-38`](../scripts/serve_policy_ext.py#L21) 把 `--num-steps` 传进 `sample_kwargs`，最终到 [`pi0.py:217-279`](../external/openpi/src/openpi/models/pi0.py#L217)：
 
 ```python
 def sample_actions(self, rng, observation, *, num_steps=10, noise=None):
@@ -71,7 +71,7 @@ def sample_actions(self, rng, observation, *, num_steps=10, noise=None):
 
 ### 2.2 replan=1 为什么更差：看失败视频
 
-replan=1 有 77 条失败（默认 38 条）。拼图在 `results/failure_gallery/ablation_replan1/`，标注 `labels.csv`（看了 47 条：非 t8 的全部 39 条 + t8 前 8 条）：
+replan=1 有 77 条失败（默认 38 条）。拼图在 [`results/failure_gallery/ablation_replan1/`](../results/failure_gallery/ablation_replan1/)，标注 `labels.csv`（看了 47 条：非 t8 的全部 39 条 + t8 前 8 条）：
 
 | 类 | 条数 | 典型 |
 |---|---|---|
@@ -111,6 +111,6 @@ replan=1 有 77 条失败（默认 38 条）。拼图在 `results/failure_galler
 
 ## 4. 练习
 
-1. 改 `ablation_inference.sbatch` 的数组，补 replan=3 和 7，看曲线在 2 和 5 之间哪里拐。
-2. 在 `eval_libero.py` 里把每步 `action` 存下来（加一列或存 npz），算相邻步差分的方差，比较 k=1 和 k=5，验证 §2.2 的解释。
-3. 用 `results/stochasticity_by_init.csv` 自己画 task 8 的 20 个初始状态成功率条形图，和 `results/showcase/libero_10_t8/` 的视频对着看：成功率 30% 的初始状态和 90% 的，两只壶一开始摆的位置有什么不同。
+1. 改 [`ablation_inference.sbatch`](../scripts/ablation_inference.sbatch) 的数组，补 replan=3 和 7，看曲线在 2 和 5 之间哪里拐。
+2. 在 [`eval_libero.py`](../scripts/eval_libero.py) 里把每步 `action` 存下来（加一列或存 npz），算相邻步差分的方差，比较 k=1 和 k=5，验证 §2.2 的解释。
+3. 用 [`results/stochasticity_by_init.csv`](../results/stochasticity_by_init.csv) 自己画 task 8 的 20 个初始状态成功率条形图，和 [`results/showcase/libero_10_t8/`](../results/showcase/libero_10_t8/) 的视频对着看：成功率 30% 的初始状态和 90% 的，两只壶一开始摆的位置有什么不同。

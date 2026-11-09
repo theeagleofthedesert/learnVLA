@@ -1,6 +1,6 @@
 # VLA Manipulation 入门计划 v2：用 π0.5 + LIBERO 建立失败直觉、找下一个 idea
 
-> 日期：2026-11-07（v2，修订自 11-06 版，旧版存为 `vla-onboarding-plan.v1-20261106.md`）。
+> 日期：2026-11-07（v2，修订自 11-06 版，旧版存为 [`vla-onboarding-plan.v1-20261106.md`](vla-onboarding-plan.v1-20261106.md)）。
 > 执行者：cluster 上的 agent。读者：lwang（入门）。时间预算 2 周。
 >
 > v2 相对 v1 的改动：
@@ -14,7 +14,7 @@
 
 ## 0. 目的
 
-**第一目的**：建立对当前 VLA 微调流程"在哪里、为什么坏"的第一手直觉，产出一份排序过的瓶颈备忘录 `bottleneck_memo.md`，作为下一轮找 idea 的输入。
+**第一目的**：建立对当前 VLA 微调流程"在哪里、为什么坏"的第一手直觉，产出一份排序过的瓶颈备忘录 [`bottleneck_memo.md`](bottleneck_memo.md)，作为下一轮找 idea 的输入。
 
 **第二目的**：lwang 入门。每一步都要产出讲解文档（§7），让人能顺着文档和代码走一遍。
 
@@ -44,18 +44,18 @@
 - 环境：openpi 要 Python 3.11，LIBERO 要 Python 3.8。openpi 用 client/server 模式解决：server 进程跑策略，client 进程跑 LIBERO 仿真，两者 websocket 通信。集群没有 docker，所以建两个 conda 环境（`openpi`、`libero`），在同一个 sbatch 作业里先后台起 server，再起 client。这是 Day 1 最可能卡住的地方，比显存更要紧。
 - 评测：4 个 suite（Spatial / Object / Goal / 10）× 10 任务 × 50 episode，固定 seed。记录每个 episode 的成败、步数、初始状态 id。
 - 统计提醒：50 个 episode 在 p≈0.9 附近标准误约 ±4 个百分点，单任务数字没有意义；suite 级 500 个 episode 约 ±1.3。**比较只在 suite 级做，差距超过 2 倍标准误才算差距。**
-- 记录：显存峰值、评测耗时、每 episode 耗时。写入 `results/repro.md`。
+- 记录：显存峰值、评测耗时、每 episode 耗时。写入 [`results/repro.md`](results/repro.md)。
 - 守门：不许超过 2 天。跑不通就记录卡点，转 OpenVLA-OFT。
 
 ### 1.2 Day 2：代码阅读（人学习的部分，与 1.1 并行）
 
-顺着 openpi 从观测到动作读一遍，写 `notes/01_code_walkthrough.md`。具体文件路径以仓库当前版本为准，下面是要找的东西：
+顺着 openpi 从观测到动作读一遍，写 [`notes/01_code_walkthrough.md`](notes/01_code_walkthrough.md)。具体文件路径以仓库当前版本为准，下面是要找的东西：
 
 1. **配置**：`pi05_libero` 这个 TrainConfig 里定义了什么。模型类、数据集、action horizon（chunk 长度）、batch、LoRA 设置、norm stats 路径。
 2. **数据变换**：LIBERO 的 policy transform。图像怎么 resize、state 怎么 pad 到统一维度、prompt 怎么拼。动作是 7 维末端增量 + 夹爪，归一化到 [-1, 1]。
 3. **归一化**：norm stats 怎么算（均值方差还是分位数）、训练时在哪里用、推理时在哪里反归一化。换数据源时最容易错的一环。
 4. **模型**：PaliGemma 作为 VLM 前缀，action expert 用 flow matching 从噪声去噪出一个 action chunk。看清楚：去噪步数、时间步嵌入、prefix 和 suffix 的 attention mask。
-5. **推理**：`serve_policy.py` 怎么封装，LIBERO 的 client 脚本里 `replan_steps` 是什么。策略每次预测 50 步 chunk，但只执行前 `replan_steps` 步就重新观测。这个参数是 1.3 的实验对象。
+5. **推理**：[`serve_policy.py`](external/openpi/scripts/serve_policy.py) 怎么封装，LIBERO 的 client 脚本里 `replan_steps` 是什么。策略每次预测 50 步 chunk，但只执行前 `replan_steps` 步就重新观测。这个参数是 1.3 的实验对象。
 
 笔记格式：每一项"概念一段 → 关键代码摘录（文件:行号，10–30 行）→ 解释 → 换数据源时会在这里踩什么坑"。
 
@@ -87,7 +87,7 @@
 
 ### 1.6 Day 5：失败分类 + 周报
 
-- 把 1.1 / 1.3 / 1.4 / 1.5 的所有失败 episode 按 §3 标注，每类存 3–5 个代表视频到 `results/failure_gallery/`。
+- 把 1.1 / 1.3 / 1.4 / 1.5 的所有失败 episode 按 §3 标注，每类存 3–5 个代表视频到 [`results/failure_gallery/`](results/failure_gallery/)。
 - 写 `progress_2026-11-xx.md`，并决定第 2 周用哪个 suite 微调（默认 LIBERO-10；若 Goal 的失败更有意思则换 Goal）。
 
 ---
@@ -146,7 +146,7 @@ R-norecover 是新加的。示教里没有恢复数据是 VLA 最常被指出的
 
 ## 5. 第 2 周周五：写瓶颈备忘录
 
-`bottleneck_memo.md`，每条瓶颈按以下模板：
+[`bottleneck_memo.md`](bottleneck_memo.md)，每条瓶颈按以下模板：
 
 ```
 ## 瓶颈 N：<一句话>
@@ -176,17 +176,17 @@ R-norecover 是新加的。示教里没有恢复数据是 VLA 最常被指出的
 
 ## 7. 教学文档要求
 
-目录 `notes/`，每个阶段一份，格式统一为：**概念 → 关键代码（文件:行号 + 10–30 行摘录 + 逐行解释）→ 实验怎么跑（完整命令）→ 结果怎么读 → 换数据源 / 换真机时这里会踩什么坑**。
+目录 [`notes/`](notes/)，每个阶段一份，格式统一为：**概念 → 关键代码（文件:行号 + 10–30 行摘录 + 逐行解释）→ 实验怎么跑（完整命令）→ 结果怎么读 → 换数据源 / 换真机时这里会踩什么坑**。
 
 | 文件 | 内容 |
 |---|---|
-| `notes/00_setup.md` | 两个 conda 环境怎么建、client/server 怎么起、EGL 渲染、第一次跑通的完整命令与常见报错 |
-| `notes/01_code_walkthrough.md` | §1.2 的五项：配置、数据变换、归一化、模型、推理 |
-| `notes/02_eval_protocol.md` | LIBERO 的初始状态怎么定义、seed 怎么固定、成功判定在哪里、置信区间怎么算 |
-| `notes/03_inference_ablation.md` | replan_steps 和去噪步数在代码里改哪、结果怎么解读 |
-| `notes/04_libero_plus.md` | 扰动怎么注入（改了 robosuite 的什么）、怎么挑扰动类 |
-| `notes/05_finetune.md` | LoRA 挂在哪些层、norm stats 怎么重算、示教子采样怎么做、checkpoint 结构 |
-| `notes/06_failure_taxonomy.md` | 分类标准、每类代表视频、容易混淆的边界案例 |
+| [`notes/00_setup.md`](notes/00_setup.md) | 两个 conda 环境怎么建、client/server 怎么起、EGL 渲染、第一次跑通的完整命令与常见报错 |
+| [`notes/01_code_walkthrough.md`](notes/01_code_walkthrough.md) | §1.2 的五项：配置、数据变换、归一化、模型、推理 |
+| [`notes/02_eval_protocol.md`](notes/02_eval_protocol.md) | LIBERO 的初始状态怎么定义、seed 怎么固定、成功判定在哪里、置信区间怎么算 |
+| [`notes/03_inference_ablation.md`](notes/03_inference_ablation.md) | replan_steps 和去噪步数在代码里改哪、结果怎么解读 |
+| [`notes/04_libero_plus.md`](notes/04_libero_plus.md) | 扰动怎么注入（改了 robosuite 的什么）、怎么挑扰动类 |
+| [`notes/05_finetune.md`](notes/05_finetune.md) | LoRA 挂在哪些层、norm stats 怎么重算、示教子采样怎么做、checkpoint 结构 |
+| [`notes/06_failure_taxonomy.md`](notes/06_failure_taxonomy.md) | 分类标准、每类代表视频、容易混淆的边界案例 |
 
 **重点代码清单**（lwang 必读，agent 在 notes 里逐段讲解）：
 
@@ -204,8 +204,8 @@ R-norecover 是新加的。示教里没有恢复数据是 VLA 最常被指出的
 
 - sbatch 头：`--partition=h100,h200,a100 --account=rzhao36_vifinav --qos=jhu --comment=accept_cost --gres=gpu:1 --cpus-per-task=8 --mem=64G --requeue`。评测作业 CPU 可以多给，MuJoCo 渲染吃 CPU。
 - 分区固定用 `h100,h200,a100`（qos=jhu）。l40s 留给 wifiVLN 项目，不要用。冒烟测试实测评测占 34.5 GB 显存，三种卡都够。`XLA_PYTHON_CLIENT_MEM_FRACTION=0.9`。
-- conda：`source /weka/projects/rzhao36/lwang/miniforge3/etc/profile.d/conda.sh`，先 `module load cuda/12.6.3`。建环境本身也用 sbatch（参考 `SmartXray/scripts/setup_env.sbatch`）。
-- **weka guard**：计算节点间歇性掉 `/weka` 挂载。每个 sbatch 开头抄 `SmartXray/scripts/run_episodes.sbatch` 的那段：等 30 次不行就 requeue 并排除该节点；日志先写 `$HOME` 再拷回。
+- conda：`source /weka/projects/rzhao36/lwang/miniforge3/etc/profile.d/conda.sh`，先 `module load cuda/12.6.3`。建环境本身也用 sbatch（参考 [`SmartXray/scripts/setup_env.sbatch`](../SmartXray/scripts/setup_env.sbatch)）。
+- **weka guard**：计算节点间歇性掉 `/weka` 挂载。每个 sbatch 开头抄 [`SmartXray/scripts/run_episodes.sbatch`](../SmartXray/scripts/run_episodes.sbatch) 的那段：等 30 次不行就 requeue 并排除该节点；日志先写 `$HOME` 再拷回。
 - HF 缓存：`HF_HOME=/weka/projects/rzhao36/lwang/datasets/models/huggingface`，`HF_HUB_DISABLE_XET=1`。
 - 存储：项目盘 39T 已用 80%。checkpoint 只留每次训练的 10k/20k/30k 三个，评测视频只留失败样本和 gallery。
 - 重活一律 sbatch，不在会话节点跑。所有 sbatch 脚本、seed、配置进 git。
@@ -216,15 +216,15 @@ R-norecover 是新加的。示教里没有恢复数据是 VLA 最常被指出的
 
 | 文件 | 内容 |
 |---|---|
-| `results/repro.md` | 官方 checkpoint 评测记录、关键配置、资源消耗 |
-| `results/eval_official.csv` | 4 suite × 10 任务 × 50 episode 的逐 episode 结果 |
-| `results/inference_ablation.csv` + 图 | replan_steps × 去噪步数 |
-| `results/libero_plus.csv` + 图 | 7 类扰动下的成功率与失败类分布 |
-| `results/stochasticity.csv` + 图 | 固定初始状态 × 采样 seed 的成功率直方图 |
-| `results/data_efficiency.csv` + 图 | 示教数 × checkpoint 步数 × seed 的成功率与失败类分布 |
-| `results/failure_gallery/` | 每类失败 3–5 个代表视频/帧 |
+| [`results/repro.md`](results/repro.md) | 官方 checkpoint 评测记录、关键配置、资源消耗 |
+| [`results/eval_official/`](results/eval_official/) 下每个 suite 一份 `episodes.csv` | 4 suite × 10 任务 × 50 episode 的逐 episode 结果 |
+| [`results/inference_ablation.csv`](results/inference_ablation.csv) + 图 | replan_steps × 去噪步数 |
+| [`results/libero_plus/`](results/libero_plus/) 下每个 suite 一份 `episodes.csv`，汇总在 [`results/libero_plus_by_category.csv`](results/libero_plus_by_category.csv)、[`results/libero_plus_by_difficulty.csv`](results/libero_plus_by_difficulty.csv) + 图 | 7 类扰动下的成功率与失败类分布 |
+| [`results/stochasticity/episodes.csv`](results/stochasticity/episodes.csv)，汇总在 [`results/stochasticity_by_init.csv`](results/stochasticity_by_init.csv) + 图 | 固定初始状态 × 采样 seed 的成功率直方图 |
+| `results/data_efficiency.csv` + 图（第 2 周，尚未生成） | 示教数 × checkpoint 步数 × seed 的成功率与失败类分布 |
+| [`results/failure_gallery/`](results/failure_gallery/) | 每类失败 3–5 个代表视频/帧 |
 | `notes/00–06` | 教学文档（§7） |
-| `bottleneck_memo.md` | 最终交付 |
+| [`bottleneck_memo.md`](bottleneck_memo.md) | 最终交付 |
 
 ---
 
@@ -232,7 +232,7 @@ R-norecover 是新加的。示教里没有恢复数据是 VLA 最常被指出的
 
 - 每个实验先写一句"这个实验要区分的两个假设是什么"，再跑。区分不了任何假设的实验不跑。
 - 先抽样小跑（1 任务 × 10 episode）确认 pipeline 正确，再全量。
-- 每完成一个阶段，先写对应的 `notes/` 文档再进入下一阶段。文档是交付物，不是附带品。
+- 每完成一个阶段，先写对应的 [`notes/`](notes/) 文档再进入下一阶段。文档是交付物，不是附带品。
 - 结果表用 csv，报告用 markdown。每天结束写 `progress_<date>.md`。
 - 发现与本计划预期相反的结果，不要圆，直接写出来；相反的结果比符合预期的更有价值。
 - 所有成功率附置信区间。单任务级的比较不下结论。

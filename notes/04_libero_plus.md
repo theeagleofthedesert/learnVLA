@@ -1,12 +1,12 @@
 # notes/04 LIBERO-Plus：换个视角、换个起手姿势，它还会吗
 
-> 读者：lwang。目的：原版 LIBERO 的 98% 是"训练和测试同分布"的分数。LIBERO-Plus 把 7 类扰动加在同样的 40 个任务上，每类几百个变体。这份笔记讲扰动是怎么注入的、官方 π0.5 在上面怎么掉、失败长什么样。对应计划 §1.4。数据 `results/libero_plus_by_category.csv`、`_by_difficulty.csv`，图 `results/libero_plus.png`，逐集 `results/libero_plus/<suite>/episodes.csv`。
+> 读者：lwang。目的：原版 LIBERO 的 98% 是"训练和测试同分布"的分数。LIBERO-Plus 把 7 类扰动加在同样的 40 个任务上，每类几百个变体。这份笔记讲扰动是怎么注入的、官方 π0.5 在上面怎么掉、失败长什么样。对应计划 §1.4。数据 [`results/libero_plus_by_category.csv`](../results/libero_plus_by_category.csv)、`_by_difficulty.csv`，图 [`results/libero_plus.png`](../results/libero_plus.png)，逐集 `results/libero_plus/<suite>/episodes.csv`。
 
 ## 1. 扰动怎么注入（改了 robosuite / LIBERO 的什么）
 
-LIBERO-Plus 是 LIBERO 的 fork（`external/LIBERO-plus/`），协议和原版几乎一样：每个"任务"是一个 BDDL 文件，**每个变体任务只跑 1 集**（`num_trials_per_task=1`），所以 4 个 suite 共 10,030 集。类别和强度等级在 `libero/libero/benchmark/task_classification.json`。七类扰动走两条路：
+LIBERO-Plus 是 LIBERO 的 fork（[`external/LIBERO-plus/`](../external/LIBERO-plus/)），协议和原版几乎一样：每个"任务"是一个 BDDL 文件，**每个变体任务只跑 1 集**（`num_trials_per_task=1`），所以 4 个 suite 共 10,030 集。类别和强度等级在 [`libero/libero/benchmark/task_classification.json`](../external/LIBERO-plus/libero/libero/benchmark/task_classification.json)。七类扰动走两条路：
 
-**(a) 文件名编码，环境构造时解析**（`libero/libero/envs/env_wrapper.py:207-230`）：
+**(a) 文件名编码，环境构造时解析**（[`libero/libero/envs/env_wrapper.py:207-230`](../external/LIBERO-plus/libero/libero/envs/env_wrapper.py#L207)）：
 
 ```python
 if "_view_" in bddl_file_name and "_initstate_" in bddl_file_name:
@@ -36,7 +36,7 @@ if "_view_" in bddl_file_name and "_initstate_" in bddl_file_name:
 
 所以**摄像头、机器人起手姿势、图像噪声三类对策略来说是"视觉输入变了，任务没变"；布局和语言两类是"任务描述或场景内容变了"**；纹理和光照介于其间。
 
-对我们 pipeline 的影响：只需要 `PLUS=1` 切 venv 和 `LIBERO_CONFIG_PATH`（`run_eval.sh`），client 代码一行没改。装环境的坑见 notes/00 报错 5–6。
+对我们 pipeline 的影响：只需要 `PLUS=1` 切 venv 和 `LIBERO_CONFIG_PATH`（[`run_eval.sh`](../scripts/run_eval.sh)），client 代码一行没改。装环境的坑见 notes/00 报错 5–6。
 
 ## 2. 怎么跑
 
@@ -47,7 +47,7 @@ python3 scripts/summarize.py --by category results/libero_plus/*/episodes.csv
 external/LIBERO-plus/.venv/bin/python scripts/plot_results.py
 ```
 
-`scripts/plus_select.py` 按类别抽任务索引；`--n 0` 全量，`--exclude-csv` 续跑。libero_10 全量超过 12 小时上限（任务多、每集 520 步），第一次跑到 1750/2519 被杀，剩下的 Objects Layout、Light Conditions 和一部分 Sensor Noise 用 `RESUME=1` 补（作业 1708765，7.6 小时跑完）。四 suite 总计 10,030 集、约 36 卡时。
+[`scripts/plus_select.py`](../scripts/plus_select.py) 按类别抽任务索引；`--n 0` 全量，`--exclude-csv` 续跑。libero_10 全量超过 12 小时上限（任务多、每集 520 步），第一次跑到 1750/2519 被杀，剩下的 Objects Layout、Light Conditions 和一部分 Sensor Noise 用 `RESUME=1` 补（作业 1708765，7.6 小时跑完）。四 suite 总计 10,030 集、约 36 卡时。
 
 ## 3. 结果
 
@@ -66,7 +66,7 @@ external/LIBERO-plus/.venv/bin/python scripts/plot_results.py
 | Light Conditions | 97.6 | 96.6 | 97.1 | 93.1 | 96.1 | |
 | **全部扰动** | 90.2 | 89.0 | 79.9 | 78.3 | 84.6 | 97.0 |
 
-对照 LIBERO-Plus 论文榜（`external/LIBERO-plus/README.md`）里的 π0（不是 π0.5）：Camera 13.8 / Robot 6.0 / Language 58.8 / Light 85.0 / Background 81.4 / Noise 79.0 / Layout 68.9。**π0.5 全面好于 π0，特别是相机视角（14→72）和机器人初始状态（6→75）**。榜上最好的 OpenVLA-OFT+ 是在 LIBERO-Plus 数据上混合微调过的（Camera 92.8），不可比。
+对照 LIBERO-Plus 论文榜（[`external/LIBERO-plus/README.md`](../external/LIBERO-plus/README.md)）里的 π0（不是 π0.5）：Camera 13.8 / Robot 6.0 / Language 58.8 / Light 85.0 / Background 81.4 / Noise 79.0 / Layout 68.9。**π0.5 全面好于 π0，特别是相机视角（14→72）和机器人初始状态（6→75）**。榜上最好的 OpenVLA-OFT+ 是在 LIBERO-Plus 数据上混合微调过的（Camera 92.8），不可比。
 
 ### 3.2 按强度等级（四 suite 合并）
 
@@ -110,5 +110,5 @@ external/LIBERO-plus/.venv/bin/python scripts/plot_results.py
 ## 5. 换数据源 / 真机时这里会踩什么
 
 - 真机上相机位置差几厘米、机械臂起手姿势随机，正好是这里最伤的两类。LIBERO 原版 98% 对真机没有预测力，LIBERO-Plus 的 Camera/Robot 列才有。
-- `task_classification.json` 的 `difficulty_level` 是作者标的，不同类别之间的"5 级"不可比。
+- [`task_classification.json`](../external/LIBERO-plus/libero/libero/benchmark/task_classification.json) 的 `difficulty_level` 是作者标的，不同类别之间的"5 级"不可比。
 - 每个变体 1 集，类别级 CI ±3–5 个点；类别 × suite 级 ±5–8。不要比单个任务。

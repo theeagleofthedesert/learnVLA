@@ -4,13 +4,13 @@
 
 ## 1. 先记住一个机制：LIBERO 没有"中途判负"
 
-`eval_libero.py` 的循环只在两种情况下结束：`done`（BDDL 目标谓词全满足）或跑到 `max_steps`。
+[`eval_libero.py`](../scripts/eval_libero.py) 的循环只在两种情况下结束：`done`（BDDL 目标谓词全满足）或跑到 `max_steps`。
 所以 **每一条失败的 `steps` 都等于 suite 的 max_steps**（220/280/300/520），`steps` 列对失败没有信息量。
 "失败"的真正含义是"在限定步数内没有达成目标"，不是"做错了什么"。机器人可能一直在尝试，也可能早就卡死了，CSV 分不出来——要看视频。
 
 ## 2. 工具：6 帧拼图
 
-每条失败视频 220–520 帧，逐条看太慢。`scripts/contact_sheet.py` 把一条视频等间隔抽 6 帧横向拼成一张图（左 agentview、右 wrist 是视频本身的布局，时间从左到右，左上角标 t）：
+每条失败视频 220–520 帧，逐条看太慢。[`scripts/contact_sheet.py`](../scripts/contact_sheet.py) 把一条视频等间隔抽 6 帧横向拼成一张图（左 agentview、右 wrist 是视频本身的布局，时间从左到右，左上角标 t）：
 
 ```bash
 source scripts/env.sh && source $LIBERO_VENV/bin/activate
@@ -37,7 +37,7 @@ python scripts/contact_sheet.py results/eval_official/libero_10/videos/*_fail.mp
 
 ## 4. 全部失败的标签（官方 checkpoint，4 suite × 50 初始状态全量）
 
-逐条标签在 `results/failure_gallery/official/labels.csv`（59 条；libero_10 t8 的 6 条没逐帧看，按同任务模式推定，标了 `?`）。
+逐条标签在 [`results/failure_gallery/official/labels.csv`](../results/failure_gallery/official/labels.csv)（59 条；libero_10 t8 的 6 条没逐帧看，按同任务模式推定，标了 `?`）。
 
 | suite | 失败数 | A 接近停滞 | B 抓取失败 | C 放置偏离 | D 悬停不放 | E 混淆 | F 看似完成 | G 碰撞 |
 |---|---|---|---|---|---|---|---|---|
@@ -64,9 +64,9 @@ python scripts/contact_sheet.py results/eval_official/libero_10/videos/*_fail.mp
 | libero_object_t9_s22 / t7_s1 | 盒装饮料进篮子 | C | 盒子斜靠在篮沿上 |
 | libero_spatial_t4_s25 / s46 | 拿抽屉里的碗放到盘上 | A | 手在柜子上方徘徊，没进抽屉 |
 
-### 4.1 成功 / 失败对照（`results/showcase/`，作业 1681235）
+### 4.1 成功 / 失败对照（[`results/showcase/`](../results/showcase/)，作业 1681235）
 
-同一批初始状态各跑 10 集、成功失败视频都存。libero_10 t8（两只摩卡壶）5/10，拼图在 `results/failure_gallery/showcase/`：
+同一批初始状态各跑 10 集、成功失败视频都存。libero_10 t8（两只摩卡壶）5/10，拼图在 [`results/failure_gallery/showcase/`](../results/failure_gallery/showcase/)：
 
 | | 第一只壶 | 第二只壶 |
 |---|---|---|
@@ -81,7 +81,7 @@ libero_10 t4 这批 10/10（官方跑里 s0 失败，这里成功），同样说
 
 ### 4.2 其他条件下的失败分布（replan=1、LIBERO-Plus 抽样）
 
-同一套标签用到 notes/03、04 的失败上（拼图分别在 `results/failure_gallery/ablation_replan1/`、`results/failure_gallery/plus/`，各有 `labels.csv`）：
+同一套标签用到 notes/03、04 的失败上（拼图分别在 [`results/failure_gallery/ablation_replan1/`](../results/failure_gallery/ablation_replan1/)、[`results/failure_gallery/plus/`](../results/failure_gallery/plus/)，各有 `labels.csv`）：
 
 | 条件 | 看了 | A 接近停滞 | D 悬停不放 | E 混淆 | C 放置偏离 | F | 停滞型 (A+D) 占比 |
 |---|---|---|---|---|---|---|---|
@@ -101,9 +101,9 @@ libero_10 t4 这批 10/10（官方跑里 s0 失败，这里成功），同样说
 3. **C 集中在 libero_object**，物体是瓶/盒，篮子口不大，松手时机差几步就掉外面。这是重采样能"洗掉"的那类失败：随机性实验（`results/stochasticity`）出来后看 object 类的 init 级成功率是否 bimodal。
 4. **F 有 2 条值得查 BDDL**：`libero_10/KITCHEN_SCENE3_..._cream_cheese_box_in_basket.bddl` 的 `In` 谓词怎么判。如果是物体叠在另一件上导致质心不在篮子包围盒里，那是谓词边界，不是策略错。
 5. **停滞不是 libero_10 独有、也不是 replan=5 独有**（§4.2）。replan=1 把停滞型失败翻倍，LIBERO-Plus 的视觉扰动下 100% 是停滞。B 类（抓取失败）在 160 多条标注里只有 1 条：抓取本身学得很好，坏的是"什么时候做"。
-6. **steps 列对失败无意义**（§1）。想量"卡了多久"，要从视频里找最后一次夹爪状态变化的帧；可以后续在 `eval_libero.py` 里记录每步的 gripper 动作，算"最后一次夹爪变化到结束"的步数，这是比成功率更细的指标。
+6. **steps 列对失败无意义**（§1）。想量"卡了多久"，要从视频里找最后一次夹爪状态变化的帧；可以后续在 [`eval_libero.py`](../scripts/eval_libero.py) 里记录每步的 gripper 动作，算"最后一次夹爪变化到结束"的步数，这是比成功率更细的指标。
 
 ## 6. 练习（建议你自己做一遍）
 
-1. 从 `results/failure_gallery/official/` 随便挑 10 张，按 §3 标类，和我的标签对一遍，不一致的地方开 mp4 看。
-2. 看 `libero_10_t8_*` 的成功视频（`videos/*_ok.mp4` 只在 `VIDEOS=all` 时才存；可以用 `run_eval.sh` 单跑 `TASKS=8 TRIALS=5 VIDEOS=all`），对比第二只壶放在第一只的哪一侧。
+1. 从 [`results/failure_gallery/official/`](../results/failure_gallery/official/) 随便挑 10 张，按 §3 标类，和我的标签对一遍，不一致的地方开 mp4 看。
+2. 看 `libero_10_t8_*` 的成功视频（`videos/*_ok.mp4` 只在 `VIDEOS=all` 时才存；可以用 [`run_eval.sh`](../scripts/run_eval.sh) 单跑 `TASKS=8 TRIALS=5 VIDEOS=all`），对比第二只壶放在第一只的哪一侧。

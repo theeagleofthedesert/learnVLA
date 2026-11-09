@@ -14,9 +14,9 @@ checkpoint `gs://openpi-assets/checkpoints/pi05_libero`，openpi main（clone �
 | libero_10      | 468/500 | 93.6 | [91.1, 95.4] | 92.4 | 是 | 65 min |
 | 平均 | | 97.05 | | 96.85 | | 3.1 h 卡时 |
 
-官方数字来自 `external/openpi/examples/libero/README.md`。四个 suite 的官方值都落在本次的置信区间内，差异都 ≤ 1.2 个百分点，和 500 集的采样噪声同量级（见 `notes/02_eval_protocol.md` §3）。**复现成立。**
+官方数字来自 [`external/openpi/examples/libero/README.md`](../external/openpi/examples/libero/README.md)。四个 suite 的官方值都落在本次的置信区间内，差异都 ≤ 1.2 个百分点，和 500 集的采样噪声同量级（见 [`notes/02_eval_protocol.md`](../notes/02_eval_protocol.md) §3）。**复现成立。**
 
-注意 README 没说官方跑了多少集、用了什么 replan；这里按 openpi `examples/libero/main.py` 的默认值跑。
+注意 README 没说官方跑了多少集、用了什么 replan；这里按 openpi [`examples/libero/main.py`](../external/openpi/examples/libero/main.py) 的默认值跑。
 
 ## 2. 任务级：失分在哪
 
@@ -35,7 +35,7 @@ libero_10 的 32 条失败里 17 条来自 task 8。去掉它，libero_10 是 43
 
 ## 3. 失败形态
 
-59 条失败全部出了 6 帧拼图并逐条标注（`results/failure_gallery/official/`，分类标准见 `notes/06_failure_taxonomy.md`）：
+59 条失败全部出了 6 帧拼图并逐条标注（[`results/failure_gallery/official/`](failure_gallery/official/)，分类标准见 [`notes/06_failure_taxonomy.md`](../notes/06_failure_taxonomy.md)）：
 
 | 类 | 条数 | 说明 |
 |---|---|---|

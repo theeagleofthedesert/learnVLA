@@ -1,0 +1,29 @@
+{
+    "python-envs.defaultEnvManager": "ms-python.python:conda",
+    "python-envs.defaultPackageManager": "ms-python.python:conda",
+
+    // 编辑器用 openpi 主环境（Python 3.11：server、训练、norm stats）
+    "python.defaultInterpreterPath": "${workspaceFolder}/external/openpi/.venv/bin/python",
+
+    // Pylance 只索引自己的脚本和 openpi 源码；虚拟环境、第三方仓库、产出物都不扫
+    "python.analysis.exclude": [
+        "**/.venv",
+        "**/node_modules",
+        "**/__pycache__",
+        "**/.git",
+        "external/LIBERO",
+        "external/LIBERO-plus",
+        "external/openpi/third_party",
+        "external/openpi/examples",
+        "assets",
+        "logs",
+        "results"
+    ],
+
+    // scripts/ 里互相 import、以及 3.8 环境里的 libero 包，让 Pylance 能解析
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/scripts",
+        "${workspaceFolder}/external/openpi/scripts",
+        "${workspaceFolder}/external/openpi/third_party/libero"
+    ]
+}

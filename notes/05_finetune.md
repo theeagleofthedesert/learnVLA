@@ -15,13 +15,13 @@
 
 ## 1. 配置在哪、和官方差在哪
 
-配置不改 `external/openpi`，全部在 `scripts/train_configs.py`，`import train_configs` 后注册进 openpi 的配置表。与 `pi05_libero`（`config.py:744`）逐项对比：
+配置不改 `external/openpi`，全部在 [`scripts/train_configs.py`](../scripts/train_configs.py)，`import train_configs` 后注册进 openpi 的配置表。与 `pi05_libero`（[`config.py:744`](../external/openpi/src/openpi/training/config.py#L744)）逐项对比：
 
 | 项 | 官方 pi05_libero | 我们的 LoRA 配置 | 为什么 |
 |---|---|---|---|
 | `paligemma_variant` | `gemma_2b` | `gemma_2b_lora` | 全量 >70 GB 显存；LoRA 22.5 GB |
 | `action_expert_variant` | `gemma_300m` | `gemma_300m_lora` | 同上 |
-| `freeze_filter` | 无 | `Pi0Config(...).get_freeze_filter()`：冻结所有非 `.*lora.*` 参数 | `pi0_config.py:88-113` |
+| `freeze_filter` | 无 | `Pi0Config(...).get_freeze_filter()`：冻结所有非 `.*lora.*` 参数 | [`pi0_config.py:88-113`](../external/openpi/src/openpi/models/pi0_config.py#L88) |
 | `ema_decay` | 0.999 | None | openpi 的 LoRA 示例都关 EMA |
 | `batch_size` | 256 | 32 | 单卡 |
 | `lr_schedule` | warmup 10k, peak 5e-5 | warmup 1k, peak 2.5e-5, decay 30k → 2.5e-6 | openpi 默认值 |
@@ -29,7 +29,7 @@
 | `discrete_state_input` | False | False | 保持一致；候选 3 的对照再打开 |
 | 其余 | pi05=True, horizon 10, quantile 归一化, 不做 delta, 从 pi05_base 起 | 同 | |
 
-LoRA 具体挂在哪（`openpi/models/gemma.py:88-107, 177-242, 319-323`，`openpi/models/lora.py:12-24`）：
+LoRA 具体挂在哪（[`openpi/models/gemma.py:88-107, 177-242, 319-323`](../external/openpi/src/openpi/models/gemma.py#L88)，[`openpi/models/lora.py:12-24`](../external/openpi/src/openpi/models/lora.py#L12)）：
 
 | 半边 | 变体 | 挂在哪些矩阵 | rank / alpha |
 |---|---|---|---|
@@ -46,7 +46,7 @@ libero_10 每任务示教数不等：**task 8（两只壶）只有 29 条，是 
 
 ## 3. norm stats
 
-`compute_norm_stats_ext.py --config-name <配置>` 在子集上算分位数（`use_quantile_norm=True`，因为 model_type 是 PI05），存 `assets/<config>/<asset_id>/norm_stats.json`，进 git。训练时 `train.sbatch` 发现没有就先算。换数据源时最容易错的一环：stats 必须和训练数据一致，评测时从 checkpoint 的 assets 里读。
+`compute_norm_stats_ext.py --config-name <配置>` 在子集上算分位数（`use_quantile_norm=True`，因为 model_type 是 PI05），存 `assets/<config>/<asset_id>/norm_stats.json`，进 git。训练时 [`train.sbatch`](../scripts/train.sbatch) 发现没有就先算。换数据源时最容易错的一环：stats 必须和训练数据一致，评测时从 checkpoint 的 assets 里读。
 
 ## 4. 怎么跑
 
